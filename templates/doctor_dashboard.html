@@ -1,1435 +1,872 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MEDSYS – Doctor Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MEDSYS - Doctor Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    :root {
-      --navy: #0f1b35;
-      --accent: #3b82f6;
-      --accent-light: #eff6ff;
-      --accent-soft: #dbeafe;
-      --green: #10b981;
-      --green-light: #d1fae5;
-      --orange: #f59e0b;
-      --orange-light: #fef3c7;
-      --red: #ef4444;
-      --red-light: #fee2e2;
-      --purple: #8b5cf6;
-      --purple-light: #ede9fe;
-      --gray-50: #f8fafc;
-      --gray-100: #f1f5f9;
-      --gray-200: #e2e8f0;
-      --gray-400: #94a3b8;
-      --gray-500: #64748b;
-      --gray-600: #475569;
-      --gray-700: #334155;
-      --text: #0f172a;
-      --radius: 14px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,.07);
-      --shadow: 0 4px 16px rgba(0,0,0,.08);
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
     }
-    .dash-root *, .dash-root *::before, .dash-root *::after { box-sizing: border-box; }
-    .dash-root {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--gray-50);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
+
+    :root{
+      --primary:#2563eb;
+      --primary-light:#dbeafe;
+      --sidebar:#0f172a;
+      --white:#ffffff;
+      --bg:#f1f5f9;
+      --text:#0f172a;
+      --gray:#64748b;
+      --border:#e2e8f0;
+      --green:#10b981;
+      --red:#ef4444;
+      --orange:#f59e0b;
+      --purple:#8b5cf6;
+      --shadow:0 4px 14px rgba(0,0,0,0.06);
+      --radius:18px;
+    }
+
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .dashboard{
+      display:flex;
+      min-height:100vh;
     }
 
     /* SIDEBAR */
-    .dash-sidebar {
-      width: 220px; background: var(--navy);
-      display: flex; flex-direction: column; flex-shrink: 0; min-height: 100%;
+
+    .sidebar{
+      width:250px;
+      background:var(--sidebar);
+      color:white;
+      padding:24px 18px;
+      display:flex;
+      flex-direction:column;
+      position:fixed;
+      height:100vh;
+      left:0;
+      top:0;
     }
-    .sidebar-logo {
-      display: flex; align-items: center; gap: 10px;
-      padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.08);
+
+    .logo{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:35px;
     }
-    .logo-icon {
-      width: 38px; height: 38px; border-radius: 10px; background: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 700; color: #fff;
-      font-family: 'Sora', sans-serif; flex-shrink: 0;
+
+    .logo-box{
+      width:45px;
+      height:45px;
+      border-radius:14px;
+      background:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      font-weight:700;
     }
-    .logo-text .lname { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 14px; color: #fff; }
-    .logo-text .lsub  { font-size: 11px; color: rgba(255,255,255,.5); }
-    .sidebar-nav { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; }
-    .snav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px; border-radius: 10px;
-      font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,.6);
-      cursor: pointer; transition: all .2s; text-decoration: none;
+
+    .logo-text h2{
+      font-size:18px;
+      font-family:'Sora',sans-serif;
     }
-    .snav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
-    .snav-item.active { background: var(--accent); color: #fff; }
-    .snav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
-    .snav-badge {
-      margin-left: auto; background: var(--red); color: #fff;
-      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 20px;
+
+    .logo-text p{
+      font-size:12px;
+      color:#94a3b8;
     }
-    .sidebar-bottom { padding: 12px; border-top: 1px solid rgba(255,255,255,.08); }
+
+    .menu{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      flex:1;
+    }
+
+    .menu a{
+      text-decoration:none;
+      color:#cbd5e1;
+      padding:13px 16px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:500;
+      transition:0.2s;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .menu a:hover{
+      background:rgba(255,255,255,0.08);
+      color:white;
+    }
+
+    .menu a.active{
+      background:var(--primary);
+      color:white;
+    }
+
+    .logout{
+      margin-top:auto;
+    }
 
     /* MAIN */
-    .dash-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+
+    .main{
+      margin-left:250px;
+      width:calc(100% - 250px);
+      padding:24px;
+    }
 
     /* TOPBAR */
-    .dash-topbar {
-      background: #fff; border-bottom: 1px solid var(--gray-200);
-      display: flex; align-items: center; gap: 14px;
-      padding: 0 24px; height: 62px; flex-shrink: 0;
-    }
-    .dash-search {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--gray-50); border: 1px solid var(--gray-200);
-      border-radius: 10px; padding: 0 14px; height: 38px; max-width: 340px; flex: 1;
-    }
-    .dash-search input { border: none; background: none; outline: none; font-size: 13.5px; font-family: inherit; color: var(--text); width: 100%; }
-    .dash-search svg { color: var(--gray-400); flex-shrink: 0; }
-    .topbar-spacer { flex: 1; }
-    .notif-btn {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--gray-50); border: 1px solid var(--gray-200);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; position: relative; color: var(--gray-600);
-    }
-    .notif-btn .nbadge {
-      position: absolute; top: -4px; right: -4px;
-      background: var(--red); color: #fff; font-size: 9px; font-weight: 700;
-      width: 16px; height: 16px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
-    }
-    .doctor-chip {
-      display: flex; align-items: center; gap: 10px;
-      padding: 6px 12px; border-radius: 10px; cursor: pointer; transition: background .15s;
-    }
-    .doctor-chip:hover { background: var(--gray-100); }
-    .doc-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(135deg,#3b82f6,#8b5cf6);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 13px;
-    }
-    .doc-info .dname { font-size: 13.5px; font-weight: 600; }
-    .doc-info .drole { font-size: 11.5px; color: var(--gray-500); }
 
-    /* CONTENT */
-    .dash-content { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-    .dash-content::-webkit-scrollbar { width: 5px; }
-    .dash-content::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
-
-    .page-hdr { display: flex; align-items: flex-start; justify-content: space-between; }
-    .page-hdr h1 { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; }
-    .page-hdr p { font-size: 13.5px; color: var(--gray-500); margin-top: 3px; }
-    .date-chip {
-      display: flex; align-items: center; gap: 7px;
-      background: #fff; border: 1px solid var(--gray-200); border-radius: 10px;
-      padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--gray-700);
-      box-shadow: var(--shadow-sm);
+    .topbar{
+      background:white;
+      border-radius:18px;
+      padding:18px 22px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
     }
 
-    /* STAT CARDS */
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .stat-card {
-      background: #fff; border-radius: var(--radius); padding: 20px;
-      border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);
-      display: flex; align-items: flex-start; gap: 16px;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-    .stat-icon { width: 50px; height: 50px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .stat-icon.blue   { background: var(--accent-light); }
-    .stat-icon.green  { background: var(--green-light); }
-    .stat-icon.purple { background: var(--purple-light); }
-    .stat-icon.orange { background: var(--orange-light); }
-    .stat-body .slabel { font-size: 12.5px; color: var(--gray-500); font-weight: 500; }
-    .stat-body .svalue { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; line-height: 1.1; margin: 4px 0 2px; }
-    .stat-body .ssub  { font-size: 12px; color: var(--gray-400); }
-    .stat-body .ssub.up   { color: var(--green); }
-    .stat-body .ssub.warn { color: var(--red); }
-    .stat-body .ssub.link { color: var(--accent); cursor: pointer; }
-
-    /* CARDS */
-    .card { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
-    .card-hdr { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 12px; }
-    .card-hdr h3 { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 15px; }
-    .view-all { font-size: 12.5px; color: var(--accent); font-weight: 500; cursor: pointer; text-decoration: none; }
-    .view-all:hover { text-decoration: underline; }
-
-    .mid-row { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
-
-    /* DOCTOR FILTER BANNER */
-    .doctor-filter-banner {
-      display: none;
-      align-items: center; gap: 12px;
-      background: linear-gradient(135deg, var(--accent-soft), var(--accent-light));
-      border: 1px solid var(--accent-soft);
-      border-radius: 12px; padding: 12px 18px;
-      font-size: 13.5px; font-weight: 500; color: var(--navy);
-    }
-    .doctor-filter-banner.visible { display: flex; }
-    .filter-avatar {
-      width: 34px; height: 34px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 12px; flex-shrink: 0;
-    }
-    .filter-clear {
-      margin-left: auto; background: var(--navy); color: #fff;
-      border: none; border-radius: 8px; padding: 5px 12px;
-      font-size: 12px; font-weight: 600; cursor: pointer;
-      font-family: inherit; transition: opacity .2s;
-    }
-    .filter-clear:hover { opacity: .8; }
-
-    /* APPOINTMENTS TABLE */
-    .appt-table-wrap { padding: 0 20px 20px; overflow-x: auto; }
-    .appt-table { width: 100%; border-collapse: collapse; }
-    .appt-table thead th {
-      text-align: left; padding: 10px 14px;
-      background: var(--gray-50); font-size: 12.5px; font-weight: 600;
-      color: var(--gray-600); border-bottom: 1px solid var(--gray-200);
-    }
-    .appt-table thead th:first-child { border-radius: 8px 0 0 8px; }
-    .appt-table thead th:last-child  { border-radius: 0 8px 8px 0; }
-    .appt-table tbody tr { transition: background .15s; }
-    .appt-table tbody tr:hover { background: var(--gray-50); }
-    .appt-table tbody td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); font-size: 13.5px; vertical-align: middle; }
-    .appt-table tbody tr:last-child td { border-bottom: none; }
-    .appt-table tbody tr.hidden-row { display: none; }
-    .patient-cell { display: flex; align-items: center; gap: 10px; }
-    .p-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--accent-soft); color: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 12px; flex-shrink: 0;
-    }
-    .p-name { font-weight: 600; }
-    .type-badge { font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
-    .type-badge.opd    { background: var(--accent-soft); color: var(--accent); }
-    .type-badge.ipd    { background: var(--purple-light); color: var(--purple); }
-    .type-badge.emr    { background: var(--red-light); color: var(--red); }
-    .type-badge.tele   { background: var(--green-light); color: var(--green); }
-    .type-badge.other  { background: var(--gray-100); color: var(--gray-600); }
-    .issue-tag { background: var(--orange-light); color: #92400e; font-size: 12px; padding: 3px 9px; border-radius: 6px; display: inline-block; }
-
-    /* NO RESULTS for filtered view */
-    .no-filter-results {
-      display: none;
-      padding: 32px 20px 28px; text-align: center; color: var(--gray-400);
-    }
-    .no-filter-results.visible { display: block; }
-    .no-filter-results .emicon { font-size: 36px; margin-bottom: 8px; }
-    .no-filter-results p { font-size: 14px; }
-
-    /* EMPTY STATE */
-    .empty-state {
-      margin: 0 20px 20px; padding: 32px 20px;
-      border: 2px dashed var(--gray-200); border-radius: 12px;
-      text-align: center; color: var(--gray-400);
-    }
-    .empty-state .emicon { font-size: 36px; margin-bottom: 10px; }
-    .empty-state p { font-size: 14px; }
-
-    /* TABLE HEADER LABEL */
-    .table-context-label {
-      font-size: 12px; color: var(--gray-500); font-weight: 500;
-      padding: 0 20px 10px; display: flex; align-items: center; gap: 8px;
-    }
-    .table-context-label span.count-badge {
-      background: var(--accent-soft); color: var(--accent);
-      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+    .search-box{
+      width:350px;
+      background:var(--bg);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 15px;
     }
 
-    /* QUICK ACTIONS */
-    .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
-    .qa-btn {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-      background: var(--gray-50); border: 1px solid var(--gray-200);
-      border-radius: 12px; padding: 16px 10px; cursor: pointer;
-      transition: all .2s; text-align: center;
+    .search-box input{
+      border:none;
+      background:none;
+      outline:none;
+      width:100%;
+      font-size:14px;
     }
-    .qa-btn:hover { background: var(--accent-light); border-color: var(--accent-soft); transform: translateY(-1px); }
-    .qa-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .qa-icon.green  { background: var(--green-light); }
-    .qa-icon.blue   { background: var(--accent-soft); }
-    .qa-icon.purple { background: var(--purple-light); }
-    .qa-icon.orange { background: var(--orange-light); }
-    .qa-label { font-size: 12px; font-weight: 600; color: var(--gray-700); }
-    .add-patient-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      padding: 14px 16px; cursor: pointer; border-top: 1px solid var(--gray-100);
+
+    .top-right{
+      display:flex;
+      align-items:center;
+      gap:16px;
     }
-    .add-patient-btn .ap-icon {
-      width: 42px; height: 42px; border-radius: 50%;
-      background: var(--green-light); border: 2px dashed var(--green);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; color: var(--green);
+
+    .notification{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      background:var(--bg);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      position:relative;
     }
-    .add-patient-btn span { font-size: 13px; font-weight: 600; color: var(--green); }
+
+    .notification span{
+      position:absolute;
+      top:-4px;
+      right:-4px;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:red;
+      color:white;
+      font-size:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .doctor-profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .avatar{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:linear-gradient(to right,#2563eb,#7c3aed);
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+    }
+
+    /* HEADER */
+
+    .page-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:24px;
+    }
+
+    .page-header h1{
+      font-family:'Sora',sans-serif;
+      font-size:28px;
+      margin-bottom:6px;
+    }
+
+    .page-header p{
+      color:var(--gray);
+      font-size:14px;
+    }
+
+    .date-box{
+      background:white;
+      padding:12px 18px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      font-size:14px;
+      font-weight:600;
+    }
+
+    /* STATS */
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:20px;
+      margin-bottom:24px;
+    }
+
+    .card{
+      background:white;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat-card{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+
+    .stat-icon{
+      width:60px;
+      height:60px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:26px;
+    }
+
+    .blue{background:#dbeafe;}
+    .green{background:#d1fae5;}
+    .orange{background:#fef3c7;}
+    .purple{background:#ede9fe;}
+
+    .stat-content h4{
+      font-size:13px;
+      color:var(--gray);
+      margin-bottom:6px;
+    }
+
+    .stat-content h2{
+      font-size:30px;
+      font-family:'Sora',sans-serif;
+      margin-bottom:4px;
+    }
+
+    .stat-content p{
+      font-size:12px;
+      color:var(--gray);
+    }
+
+    /* CONTENT GRID */
+
+    .content-grid{
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:24px;
+    }
+
+    /* TABLE */
+
+    .table-card{
+      background:white;
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .table-header{
+      padding:22px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .table-header h3{
+      font-size:18px;
+      font-family:'Sora',sans-serif;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    thead{
+      background:#f8fafc;
+    }
+
+    th{
+      text-align:left;
+      padding:16px;
+      font-size:13px;
+      color:var(--gray);
+    }
+
+    td{
+      padding:16px;
+      border-top:1px solid #f1f5f9;
+      font-size:14px;
+    }
+
+    tbody tr:hover{
+      background:#f8fafc;
+    }
+
+    .patient{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .patient-avatar{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:var(--primary-light);
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+    }
+
+    .badge{
+      padding:5px 12px;
+      border-radius:30px;
+      font-size:12px;
+      font-weight:600;
+    }
+
+    .badge.opd{
+      background:#dbeafe;
+      color:#2563eb;
+    }
+
+    .badge.ipd{
+      background:#ede9fe;
+      color:#7c3aed;
+    }
+
+    .badge.emergency{
+      background:#fee2e2;
+      color:#dc2626;
+    }
+
+    /* RIGHT SIDE */
+
+    .side-column{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .quick-btn{
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:18px;
+      text-align:center;
+      transition:0.2s;
+      cursor:pointer;
+    }
+
+    .quick-btn:hover{
+      transform:translateY(-3px);
+      background:#eff6ff;
+    }
+
+    .quick-btn div{
+      font-size:26px;
+      margin-bottom:10px;
+    }
+
+    .quick-btn p{
+      font-size:13px;
+      font-weight:600;
+    }
 
     /* NOTIFICATIONS */
-    .notif-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
-    .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 10px; background: var(--gray-50); border: 1px solid var(--gray-100); }
-    .notif-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-    .notif-icon.red    { background: var(--red-light); }
-    .notif-icon.orange { background: var(--orange-light); }
-    .notif-icon.purple { background: var(--purple-light); }
-    .notif-body .ntitle { font-size: 13px; font-weight: 600; }
-    .notif-body .nsub   { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
-    .notif-time { font-size: 11px; color: var(--gray-400); white-space: nowrap; flex-shrink: 0; }
 
-    /* DOCTOR DROPDOWN */
-    @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-    .doc-menu-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 9px 10px; border-radius: 10px; cursor: pointer;
-      transition: background .15s; border: 2px solid transparent;
-    }
-    .doc-menu-item:hover { background: #f8fafc; }
-    .doc-menu-item.selected { border-color: var(--accent); background: var(--accent-light); }
-    .doc-menu-avatar {
-      width: 34px; height: 34px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 12px; flex-shrink: 0;
+    .notification-list{
+      margin-top:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    /* ROW HIGHLIGHT for filtered */
-    @keyframes rowPop { from { background: var(--accent-light); } to { background: transparent; } }
-    .appt-table tbody tr.just-filtered { animation: rowPop .6s ease forwards; }
-
-    /* ── ADD PATIENT MODAL ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; z-index: 2000;
-      background: rgba(15,27,53,.45); backdrop-filter: blur(4px);
-      align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
-
-    .modal-box {
-      background: #fff; border-radius: 20px;
-      box-shadow: 0 24px 60px rgba(0,0,0,.18);
-      width: 560px; max-width: calc(100vw - 32px);
-      max-height: 92vh; overflow: hidden;
-      display: flex; flex-direction: column;
-      animation: modalSlide .25s cubic-bezier(.34,1.56,.64,1);
-    }
-    @keyframes modalSlide { from { transform: translateY(30px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
-
-    .modal-header {
-      display: flex; align-items: center; gap: 14px;
-      padding: 22px 24px 16px; border-bottom: 1px solid var(--gray-100);
-      flex-shrink: 0;
-    }
-    .modal-header-icon {
-      width: 44px; height: 44px; border-radius: 13px;
-      background: var(--green-light); display: flex; align-items: center;
-      justify-content: center; font-size: 20px; flex-shrink: 0;
-    }
-    .modal-header h2 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 700; }
-    .modal-header p  { font-size: 12.5px; color: var(--gray-500); margin-top: 2px; }
-    .modal-close {
-      margin-left: auto; width: 34px; height: 34px; border-radius: 9px;
-      border: none; background: var(--gray-100); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--gray-600); font-size: 16px; transition: background .15s;
-    }
-    .modal-close:hover { background: var(--gray-200); }
-
-    /* STEPS BAR */
-    .steps-bar {
-      display: flex; align-items: center; gap: 0;
-      padding: 16px 24px; border-bottom: 1px solid var(--gray-100); flex-shrink: 0;
-    }
-    .step-item { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .step-item:last-child { flex: 0; }
-    .step-num {
-      width: 28px; height: 28px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; flex-shrink: 0;
-      border: 2px solid var(--gray-200); color: var(--gray-400);
-      transition: all .3s;
-    }
-    .step-num.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .step-num.done   { background: var(--green); border-color: var(--green); color: #fff; }
-    .step-label { font-size: 12px; font-weight: 600; color: var(--gray-400); transition: color .3s; }
-    .step-label.active { color: var(--accent); }
-    .step-label.done   { color: var(--green); }
-    .step-line { flex: 1; height: 2px; background: var(--gray-200); margin: 0 8px; border-radius: 2px; transition: background .3s; }
-    .step-line.done { background: var(--green); }
-
-    /* FORM PANELS */
-    .modal-body { flex: 1; overflow-y: auto; padding: 24px; }
-    .modal-body::-webkit-scrollbar { width: 4px; }
-    .modal-body::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
-
-    .form-panel { display: none; flex-direction: column; gap: 16px; }
-    .form-panel.active { display: flex; animation: panelIn .2s ease; }
-    @keyframes panelIn { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
-
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 12.5px; font-weight: 600; color: var(--gray-700); }
-    .form-group label .req { color: var(--red); margin-left: 2px; }
-    .form-control {
-      height: 40px; border: 1.5px solid var(--gray-200); border-radius: 10px;
-      padding: 0 12px; font-size: 13.5px; font-family: inherit; color: var(--text);
-      outline: none; transition: border-color .2s, box-shadow .2s; background: #fff;
-      width: 100%;
-    }
-    .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
-    .form-control.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(239,68,68,.1); }
-    select.form-control { cursor: pointer; }
-    textarea.form-control { height: 80px; padding: 10px 12px; resize: none; line-height: 1.5; }
-
-    .form-section-title {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; color: var(--gray-400); margin-bottom: -4px;
+    .notify{
+      display:flex;
+      gap:12px;
+      background:#f8fafc;
+      padding:14px;
+      border-radius:14px;
     }
 
-    /* DOCTOR SELECTOR CHIPS */
-    .doctor-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .doc-chip {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 14px; border-radius: 99px; cursor: pointer;
-      border: 2px solid var(--gray-200); font-size: 13px; font-weight: 600;
-      transition: all .2s; color: var(--gray-700); background: #fff;
-    }
-    .doc-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-    .doc-chip.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
-    .doc-chip-av {
-      width: 22px; height: 22px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700;
+    .notify-icon{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
     }
 
-    /* REVIEW CARD */
-    .review-card {
-      background: var(--gray-50); border: 1px solid var(--gray-200);
-      border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    .notify-content h4{
+      font-size:14px;
+      margin-bottom:4px;
     }
-    .review-row { display: flex; gap: 8px; font-size: 13px; }
-    .review-row .rk { color: var(--gray-500); min-width: 120px; font-weight: 500; }
-    .review-row .rv { font-weight: 600; color: var(--text); }
 
-    /* SUCCESS */
-    .success-panel {
-      display: none; flex-direction: column; align-items: center;
-      justify-content: center; gap: 16px; text-align: center; padding: 32px 24px;
+    .notify-content p{
+      font-size:12px;
+      color:var(--gray);
     }
-    .success-panel.active { display: flex; animation: panelIn .3s ease; }
-    .success-icon {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: var(--green-light); display: flex; align-items: center;
-      justify-content: center; font-size: 32px;
-      animation: popIn .4s cubic-bezier(.34,1.56,.64,1) .1s both;
-    }
-    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-    .success-panel h3 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; }
-    .success-panel p  { font-size: 13.5px; color: var(--gray-500); max-width: 320px; }
 
-    /* MODAL FOOTER */
-    .modal-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 24px; border-top: 1px solid var(--gray-100); flex-shrink: 0;
-      gap: 12px;
-    }
-    .btn-back {
-      display: flex; align-items: center; gap: 6px;
-      padding: 9px 18px; border-radius: 10px;
-      border: 1.5px solid var(--gray-200); background: #fff;
-      font-size: 13.5px; font-weight: 600; color: var(--gray-700);
-      cursor: pointer; font-family: inherit; transition: all .2s;
-    }
-    .btn-back:hover { background: var(--gray-50); border-color: var(--gray-400); }
-    .btn-next {
-      display: flex; align-items: center; gap: 6px;
-      padding: 9px 22px; border-radius: 10px; border: none;
-      background: var(--accent); color: #fff;
-      font-size: 13.5px; font-weight: 600; cursor: pointer;
-      font-family: inherit; transition: all .2s; margin-left: auto;
-    }
-    .btn-next:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,.3); }
-    .btn-next.green { background: var(--green); }
-    .btn-next.green:hover { background: #059669; box-shadow: 0 4px 12px rgba(16,185,129,.3); }
-    .field-error { font-size: 11.5px; color: var(--red); margin-top: 2px; }
+    @media(max-width:1200px){
+      .stats{
+        grid-template-columns:repeat(2,1fr);
+      }
 
-    @media (max-width: 1100px) {
-      .stats-grid { grid-template-columns: repeat(2,1fr); }
-      .mid-row { grid-template-columns: 1fr; }
+      .content-grid{
+        grid-template-columns:1fr;
+      }
     }
-    @media (max-width: 700px) {
-      .dash-sidebar { display: none; }
-      .stats-grid { grid-template-columns: 1fr 1fr; }
+
+    @media(max-width:768px){
+
+      .sidebar{
+        display:none;
+      }
+
+      .main{
+        margin-left:0;
+        width:100%;
+      }
+
+      .stats{
+        grid-template-columns:1fr;
+      }
+
+      .topbar{
+        flex-direction:column;
+        gap:16px;
+        align-items:flex-start;
+      }
+
+      .search-box{
+        width:100%;
+      }
     }
+
   </style>
 </head>
+
 <body>
-<div class="dash-root">
+
+<div class="dashboard">
 
   <!-- SIDEBAR -->
-  <aside class="dash-sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">+</div>
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      <div class="logo-box">+</div>
+
       <div class="logo-text">
-        <div class="lname">MEDSYS</div>
-        <div class="lsub">Hospital Management</div>
+        <h2>MEDSYS</h2>
+        <p>Hospital Management</p>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <a class="snav-item active" href="/doctor">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
+
+    <div class="menu">
+
+      <a href="/doctor" class="{% if active_page == 'dashboard' %}active{% endif %}">
+        🏠 Dashboard
       </a>
 
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Patients
+      <a href="/doctor/patients" class="{% if active_page == 'patients' %}active{% endif %}">
+        👨‍⚕️ Patients
       </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Prescriptions
-      </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Medical Records
-      </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v11m0 0h10m-10 0a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2m-10 0V9m10 5V9m0 0H9"/></svg>
-        Lab Reports
-      </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Messages
-        <span class="snav-badge">3</span>
-      </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Emergency
-      </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Reports
-      </a>
-      <a class="snav-item" href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h2M2 12H.01M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 22v-2M12 4V2"/></svg>
-        Settings
-      </a>
-    </nav>
-    <div class="sidebar-bottom">
-      <form action="/doctor/logout" method="post" style="width:100%; margin:0;">
-        <button type="submit" class="snav-item" style="width:100%; border:none; background:transparent; padding:10px 12px; text-align:left; color:rgba(255,255,255,.6); cursor:pointer;">
+      <a href="#">💊 Prescriptions</a>
+      <a href="#">📄 Medical Records</a>
+      <a href="#">🧪 Lab Reports</a>
+      <a href="#">💬 Messages</a>
+      <a href="#">🚨 Emergency</a>
+      <a href="#">📊 Reports</a>
+      <a href="#">⚙️ Settings</a>
 
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
-      </a>
     </div>
+
+    <div class="logout">
+      <form action="/doctor/logout" method="post">
+        <button type="submit"
+        style="
+          width:100%;
+          padding:13px;
+          border:none;
+          border-radius:12px;
+          background:#1e293b;
+          color:white;
+          font-size:14px;
+          cursor:pointer;
+        ">
+          Logout
+        </button>
+      </form>
+    </div>
+
   </aside>
 
   <!-- MAIN -->
-  <div class="dash-main">
+
+  <main class="main">
 
     <!-- TOPBAR -->
-    <div class="dash-topbar">
-      <div class="dash-search">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="Search patients, appointments…" oninput="searchTable(this.value)">
-      </div>
-      <div class="topbar-spacer"></div>
-      <div class="notif-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <div class="nbadge" id="notifBadge">5</div>
+
+    <div class="topbar">
+
+      <div class="search-box">
+        <input type="text" placeholder="Search patients, appointments...">
       </div>
 
-      <!-- DOCTOR CHIP -->
-      <div class="doctor-chip" id="doctorChip" onclick="toggleDoctorMenu()" style="position:relative;">
-        <div class="doc-avatar" id="topbarAvatar">DR</div>
-        <div class="doc-info">
-          <div class="dname" id="topbarName">All Doctors</div>
-          <div class="drole" id="topbarRole">MEDSYS</div>
+      <div class="top-right">
+
+        <div class="notification">
+          🔔
+          <span>5</span>
         </div>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
 
-        <!-- DROPDOWN -->
-        <div id="doctorMenu" style="
-          display:none; position:absolute; top:calc(100% + 10px); right:0;
-          background:#fff; border:1px solid #e2e8f0; border-radius:14px;
-          box-shadow:0 8px 24px rgba(0,0,0,.12); min-width:240px; z-index:999;
-          overflow:hidden; animation: fadeIn .15s ease;
-        ">
-          <div style="padding:10px 14px 8px; border-bottom:1px solid #f1f5f9;">
-            <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Filter by Doctor</div>
+        <div class="doctor-profile">
+          <div class="avatar">
+            {{ (doctor_display_name.split(' ') | first)[0:1] if doctor_display_name else 'D' }}
           </div>
-          <div style="padding:6px;">
 
-            <!-- ALL DOCTORS option -->
-            <div class="doc-menu-item selected" id="menuAll" onclick="selectDoctor(event,'all','All Doctors','DR','linear-gradient(135deg,#3b82f6,#8b5cf6)','#fff','MEDSYS')">
-              <div class="doc-menu-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;">DR</div>
-              <div>
-                <div style="font-size:13.5px;font-weight:600;">All Doctors</div>
-                <div style="font-size:11.5px;color:#94a3b8;">Show all appointments</div>
-              </div>
-              <svg id="check-all" style="margin-left:auto;color:var(--accent);" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-
-            <div class="doc-menu-item" id="menuSJ" onclick="selectDoctor(event,'Dr. Sarah Johnson','Dr. Sarah Johnson','SJ','#dbeafe','#1d4ed8','Cardiologist')">
-              <div class="doc-menu-avatar" style="background:#dbeafe;color:#1d4ed8;">SJ</div>
-              <div>
-                <div style="font-size:13.5px;font-weight:600;">Dr. Sarah Johnson</div>
-                <div style="font-size:11.5px;color:#94a3b8;">Cardiologist</div>
-              </div>
-              <span id="count-Dr. Sarah Johnson" style="margin-left:auto;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;"></span>
-            </div>
-
-            <div class="doc-menu-item" id="menuMB" onclick="selectDoctor(event,'Dr. Michael Brown','Dr. Michael Brown','MB','#d1fae5','#065f46','Neurologist')">
-              <div class="doc-menu-avatar" style="background:#d1fae5;color:#065f46;">MB</div>
-              <div>
-                <div style="font-size:13.5px;font-weight:600;">Dr. Michael Brown</div>
-                <div style="font-size:11.5px;color:#94a3b8;">Neurologist</div>
-              </div>
-              <span id="count-Dr. Michael Brown" style="margin-left:auto;background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;"></span>
-            </div>
-
-            <div class="doc-menu-item" id="menuED" onclick="selectDoctor(event,'Dr. Emily Davis','Dr. Emily Davis','ED','#ede9fe','#5b21b6','Pediatrician')">
-              <div class="doc-menu-avatar" style="background:#ede9fe;color:#5b21b6;">ED</div>
-              <div>
-                <div style="font-size:13.5px;font-weight:600;">Dr. Emily Davis</div>
-                <div style="font-size:11.5px;color:#94a3b8;">Pediatrician</div>
-              </div>
-              <span id="count-Dr. Emily Davis" style="margin-left:auto;background:var(--purple-light);color:var(--purple);font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;"></span>
-            </div>
-
-            <div class="doc-menu-item" id="menuDW" onclick="selectDoctor(event,'Dr. Daniel Wilson','Dr. Daniel Wilson','DW','#fef3c7','#92400e','Orthopedic')">
-              <div class="doc-menu-avatar" style="background:#fef3c7;color:#92400e;">DW</div>
-              <div>
-                <div style="font-size:13.5px;font-weight:600;">Dr. Daniel Wilson</div>
-                <div style="font-size:11.5px;color:#94a3b8;">Orthopedic</div>
-              </div>
-              <span id="count-Dr. Daniel Wilson" style="margin-left:auto;background:var(--orange-light);color:#92400e;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;"></span>
-            </div>
-
+          <div>
+            <h4>{{ doctor_display_name if doctor_display_name else 'Doctor' }}</h4>
+            <p style="font-size:12px;color:gray;">{{ session.get('doctor_username') }}</p>
           </div>
         </div>
+
       </div>
+
     </div>
 
-    <!-- CONTENT -->
-    <div class="dash-content">
+    <!-- PAGE HEADER -->
 
-      <!-- PAGE HEADER -->
-      <div class="page-hdr">
-        <div>
-          <h1 id="pageTitle">Welcome, Doctor 👋</h1>
-          <p id="pageSubtitle">Here's what's happening with your practice today.</p>
-        </div>
-        <div class="date-chip">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          <span id="today-date">—</span>
+    <div class="page-header">
+
+      <div>
+        <h1>Welcome Back 👋</h1>
+        <p>Manage appointments and patient records easily.</p>
+      </div>
+
+      <div class="date-box" id="today-date">
+        Loading...
+      </div>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+      <div class="card stat-card">
+        <div class="stat-icon blue">📅</div>
+
+        <div class="stat-content">
+          <h4>Total Appointments</h4>
+          <h2>5</h2>
+          <p>Appointments booked</p>
         </div>
       </div>
 
-      <!-- STAT CARDS -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue">📅</div>
-          <div class="stat-body">
-            <div class="slabel">Total Appointments</div>
-            <div class="svalue" id="statTotal" style="color:var(--accent)">5</div>
-            <div class="ssub" id="statTotalSub">All booked appointments</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon green">✅</div>
-          <div class="stat-body">
-            <div class="slabel">Today's Slots</div>
-            <div class="svalue" style="color:var(--green)" id="statToday">—</div>
-            <div class="ssub up">Scheduled for today</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">👥</div>
-          <div class="stat-body">
-            <div class="slabel">Unique Patients</div>
-            <div class="svalue" style="color:var(--purple)" id="statPatients">5</div>
-            <div class="ssub link">View patient records</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon orange">🚨</div>
-          <div class="stat-body">
-            <div class="slabel">Emergency Cases</div>
-            <div class="svalue" style="color:var(--red)" id="statEmergency">1</div>
-            <div class="ssub warn">Requires attention</div>
-          </div>
+      <div class="card stat-card">
+        <div class="stat-icon green">✅</div>
+
+        <div class="stat-content">
+          <h4>Today's Slots</h4>
+          <h2>3</h2>
+          <p>Scheduled today</p>
         </div>
       </div>
 
-      <!-- DOCTOR FILTER BANNER -->
-      <div class="doctor-filter-banner" id="filterBanner">
-        <div class="filter-avatar" id="bannerAvatar"></div>
-        <div>
-          <strong id="bannerName"></strong>
-          <span id="bannerCount" style="color:var(--gray-500);font-weight:400;"></span>
+      <div class="card stat-card">
+        <div class="stat-icon purple">👥</div>
+
+        <div class="stat-content">
+          <h4>Patients</h4>
+          <h2>5</h2>
+          <p>Registered patients</p>
         </div>
-        <button class="filter-clear" onclick="clearFilter()">✕ Clear Filter</button>
       </div>
 
-      <!-- MIDDLE ROW -->
-      <div class="mid-row">
+      <div class="card stat-card">
+        <div class="stat-icon orange">🚨</div>
 
-        <!-- APPOINTMENTS TABLE -->
+        <div class="stat-content">
+          <h4>Emergency</h4>
+          <h2>1</h2>
+          <p>Needs attention</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTENT GRID -->
+
+    <div class="content-grid">
+
+      <!-- TABLE -->
+
+      <div class="table-card">
+
+        <div class="table-header">
+          <h3>Booked Appointments</h3>
+        </div>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Type</th>
+              <th>Schedule</th>
+              <th>Issue</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for appt in appointments %}
+
+            <tr>
+
+              <td>{{ appt.id }}</td>
+
+              <td>
+                <div class="patient">
+                  <div class="patient-avatar">
+                    {{ appt.patient_name[:1] }}
+                  </div>
+
+                  {{ appt.patient_name }}
+                </div>
+              </td>
+
+              <td>{{ appt.doctor }}</td>
+
+              <td>
+                <span class="badge 
+                {% if appt.appointment_type == 'OPD' %}
+                opd
+                {% elif appt.appointment_type == 'IPD' %}
+                ipd
+                {% else %}
+                emergency
+                {% endif %}
+                ">
+                  {{ appt.appointment_type }}
+                </span>
+              </td>
+
+              <td>{{ appt.time_schedule }}</td>
+
+              <td>{{ appt.issue }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+
+      <div class="side-column">
+
+        <!-- QUICK ACTIONS -->
+
         <div class="card">
-          <div class="card-hdr">
-            <h3 id="tableTitle">Booked Appointments</h3>
-            <a class="view-all" href="#">View all →</a>
-          </div>
 
-          <div class="table-context-label" id="tableContextLabel" style="display:none;">
-            Showing patients for <strong id="contextDoctorName"></strong>
-            <span class="count-badge" id="contextCount"></span>
-          </div>
+          <h3 style="font-family:'Sora',sans-serif;">Quick Actions</h3>
 
-          <div class="appt-table-wrap">
-            <table class="appt-table" id="apptTable">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Patient</th>
-                  <th>Doctor</th>
-                  <th>Type</th>
-                  <th>Schedule</th>
-                  <th>Health Issue</th>
-                  <th>Booked At</th>
-                </tr>
-              </thead>
-              <tbody id="apptBody">
-                {%- for appt in appointments %}
-                {%- set appt_type = appt.appointment_type|default('') %}
-                {%- if appt_type == 'OPD' %}
-                  {%- set badge_class = 'opd' %}
-                {%- elif appt_type == 'IPD' %}
-                  {%- set badge_class = 'ipd' %}
-                {%- elif appt_type == 'Emergency' %}
-                  {%- set badge_class = 'emr' %}
-                {%- elif appt_type == 'Tele' %}
-                  {%- set badge_class = 'tele' %}
-                {%- else %}
-                  {%- set badge_class = 'other' %}
-                {%- endif %}
+          <div class="quick-grid">
 
-                <tr data-doctor="{{ appt.doctor }}" data-type="{{ appt.appointment_type }}">
-                  <td style="color:var(--gray-400);font-weight:600;">{{ appt.id }}</td>
-                  <td>
-                    <div class="patient-cell">
-                      <div class="p-avatar">{{ (appt.patient_name|default(''))[:1] }}</div>
-                      <span class="p-name">{{ appt.patient_name }}</span>
-                    </div>
-                  </td>
-                  <td style="font-weight:500;">{{ appt.doctor }}</td>
-                  <td><span class="type-badge {{ badge_class }}">{{ appt.appointment_type }}</span></td>
-                  <td style="font-size:13px;color:var(--gray-600);">{{ appt.time_schedule }}</td>
-                  <td><span class="issue-tag">{{ appt.issue }}</span></td>
-                  <td style="font-size:12px;color:var(--gray-400);">{{ appt.created_at }}</td>
-                </tr>
-                {%- endfor %}
-              </tbody>
-            </table>
-            <div class="no-filter-results" id="noResults">
-              <div class="emicon">🔍</div>
-              <p id="noResultsText">No patients found for this doctor.</p>
+            <div class="quick-btn">
+              <div>💊</div>
+              <p>Add Prescription</p>
             </div>
-          </div>
-        </div>
 
-        <!-- RIGHT COLUMN -->
-        <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="quick-btn">
+              <div>📁</div>
+              <p>Patient Records</p>
+            </div>
 
-          <!-- QUICK ACTIONS -->
-          <div class="card">
-            <div class="card-hdr"><h3>Quick Actions</h3></div>
-            <div class="qa-grid">
-              <div class="qa-btn"><div class="qa-icon green">💊</div><div class="qa-label">Add Prescription</div></div>
-              <div class="qa-btn"><div class="qa-icon blue">📁</div><div class="qa-label">Patient Records</div></div>
-              <div class="qa-btn"><div class="qa-icon purple">🎥</div><div class="qa-label">Start Consultation</div></div>
-              <div class="qa-btn"><div class="qa-icon orange">📆</div><div class="qa-label">Update Availability</div></div>
+            <div class="quick-btn">
+              <div>🎥</div>
+              <p>Consultation</p>
             </div>
-            <div class="add-patient-btn" onclick="openModal()" style="cursor:pointer;">
-              <div class="ap-icon">+</div>
-              <span>Add New Patient</span>
-            </div>
-          </div>
 
-          <!-- NOTIFICATIONS -->
-          <div class="card">
-            <div class="card-hdr"><h3>Notifications</h3><a class="view-all" href="#">View all</a></div>
-            <div class="notif-list">
-              <div class="notif-item">
-                <div class="notif-icon orange">📅</div>
-                <div class="notif-body">
-                  <div class="ntitle">Appointment reminder</div>
-                  <div class="nsub" id="notifApptCount">You have 5 appointment(s) booked</div>
-                </div>
-                <div class="notif-time">Now</div>
-              </div>
-              <div class="notif-item">
-                <div class="notif-icon red">🚨</div>
-                <div class="notif-body">
-                  <div class="ntitle">Emergency cases</div>
-                  <div class="nsub" id="notifEmergency">1 emergency case(s) active</div>
-                </div>
-                <div class="notif-time">Live</div>
-              </div>
-              <div class="notif-item">
-                <div class="notif-icon purple">📋</div>
-                <div class="notif-body">
-                  <div class="ntitle">Pending reports</div>
-                  <div class="nsub">Check lab reports section</div>
-                </div>
-                <div class="notif-time">—</div>
-              </div>
+            <div class="quick-btn">
+              <div>📆</div>
+              <p>Availability</p>
             </div>
+
           </div>
 
         </div>
-      </div>
 
-    </div><!-- /dash-content -->
-  </div><!-- /dash-main -->
-</div><!-- /dash-root -->
+        <!-- PATIENT LISTING -->
 
-<!-- ══════════════════════════════════════════
-     ADD NEW PATIENT MODAL
-══════════════════════════════════════════ -->
-<div class="modal-overlay" id="patientModal" onclick="handleOverlayClick(event)">
-  <div class="modal-box">
+        <div class="card">
 
-    <!-- HEADER -->
-      <div class="modal-header">
-        <div class="modal-header-icon">🧑‍⚕️</div>
-        <div>
-          <h2>Add New Patient</h2>
-          <p>Fill in the details below to register a new patient</p>
+          <h3 style="font-family:'Sora',sans-serif;">Patients</h3>
+
+          <div class="notification-list">
+
+            {% if patients %}
+              {% for p in patients %}
+                <div class="notify">
+                  <div class="notify-icon" style="background:var(--primary-light); color:var(--primary);">
+                    {{ p.patient_name[:1] }}
+                  </div>
+
+                  <div class="notify-content">
+                    <h4 style="margin-bottom:2px;">{{ p.patient_name }}</h4>
+                    <p style="margin:0; font-size:12px; color:var(--gray);">
+                      {{ p.appointment_type }} • {{ p.time_schedule }}
+                    </p>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p style="color:var(--gray); font-size:13px;">No patients found.</p>
+            {% endif %}
+
+          </div>
+
         </div>
-        <button class="modal-close" onclick="closeModalAndRedirect()">✕</button>
+
+        <!-- NOTIFICATIONS -->
+
+        <div class="card">
+
+          <h3 style="font-family:'Sora',sans-serif;">Notifications</h3>
+
+          <div class="notification-list">
+
+            <div class="notify">
+
+              <div class="notify-icon" style="background:#fef3c7;">
+                📅
+              </div>
+
+              <div class="notify-content">
+                <h4>Appointment Reminder</h4>
+                <p>You have 5 appointments today</p>
+              </div>
+
+            </div>
+
+            <div class="notify">
+
+              <div class="notify-icon" style="background:#fee2e2;">
+                🚨
+              </div>
+
+              <div class="notify-content">
+                <h4>Emergency Case</h4>
+                <p>1 emergency case active</p>
+              </div>
+
+            </div>
+
+            <div class="notify">
+
+              <div class="notify-icon" style="background:#ede9fe;">
+                📋
+              </div>
+
+              <div class="notify-content">
+                <h4>Pending Reports</h4>
+                <p>Check lab reports section</p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-    <!-- STEPS BAR -->
-    <div class="steps-bar">
-      <div class="step-item">
-        <div class="step-num active" id="sn1">1</div>
-        <div class="step-label active" id="sl1">Personal Info</div>
-      </div>
-      <div class="step-line" id="line1"></div>
-      <div class="step-item">
-        <div class="step-num" id="sn2">2</div>
-        <div class="step-label" id="sl2">Medical Info</div>
-      </div>
-      <div class="step-line" id="line2"></div>
-      <div class="step-item">
-        <div class="step-num" id="sn3">3</div>
-        <div class="step-label" id="sl3">Assign Doctor</div>
-      </div>
-      <div class="step-line" id="line3"></div>
-      <div class="step-item">
-        <div class="step-num" id="sn4">4</div>
-        <div class="step-label" id="sl4">Review</div>
-      </div>
     </div>
 
-    <!-- BODY -->
-    <div class="modal-body">
+  </main>
 
-      <!-- STEP 1 – Personal Info -->
-      <div class="form-panel active" id="panel1">
-        <div class="form-section-title">Basic Details</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>First Name <span class="req">*</span></label>
-            <input class="form-control" id="f_fname" placeholder="e.g. Alice" oninput="clearErr(this)">
-            <div class="field-error" id="e_fname"></div>
-          </div>
-          <div class="form-group">
-            <label>Last Name <span class="req">*</span></label>
-            <input class="form-control" id="f_lname" placeholder="e.g. Martin" oninput="clearErr(this)">
-            <div class="field-error" id="e_lname"></div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Date of Birth <span class="req">*</span></label>
-            <input class="form-control" id="f_dob" type="date" oninput="clearErr(this)">
-            <div class="field-error" id="e_dob"></div>
-          </div>
-          <div class="form-group">
-            <label>Gender <span class="req">*</span></label>
-            <select class="form-control" id="f_gender" onchange="clearErr(this)">
-              <option value="">Select gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-              <option>Prefer not to say</option>
-            </select>
-            <div class="field-error" id="e_gender"></div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Phone Number <span class="req">*</span></label>
-            <input class="form-control" id="f_phone" placeholder="+1 (555) 000-0000" oninput="clearErr(this)">
-            <div class="field-error" id="e_phone"></div>
-          </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input class="form-control" id="f_email" type="email" placeholder="patient@email.com">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Home Address</label>
-          <input class="form-control" id="f_address" placeholder="123 Main St, City, State">
-        </div>
-      </div>
-
-      <!-- STEP 2 – Medical Info -->
-      <div class="form-panel" id="panel2">
-        <div class="form-section-title">Medical Details</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Blood Group</label>
-            <select class="form-control" id="f_blood">
-              <option value="">Unknown / Not specified</option>
-              <option>A+</option><option>A-</option>
-              <option>B+</option><option>B-</option>
-              <option>AB+</option><option>AB-</option>
-              <option>O+</option><option>O-</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Appointment Type <span class="req">*</span></label>
-            <select class="form-control" id="f_type" onchange="clearErr(this)">
-              <option value="">Select type</option>
-              <option>OPD</option>
-              <option>IPD</option>
-              <option>Emergency</option>
-              <option>Tele</option>
-            </select>
-            <div class="field-error" id="e_type"></div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Primary Health Issue <span class="req">*</span></label>
-          <input class="form-control" id="f_issue" placeholder="e.g. Chest pain, Fever, Fracture…" oninput="clearErr(this)">
-          <div class="field-error" id="e_issue"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Allergies</label>
-            <input class="form-control" id="f_allergies" placeholder="e.g. Penicillin, Nuts">
-          </div>
-          <div class="form-group">
-            <label>Current Medications</label>
-            <input class="form-control" id="f_meds" placeholder="e.g. Metformin 500mg">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Additional Notes</label>
-          <textarea class="form-control" id="f_notes" placeholder="Any other relevant medical history…"></textarea>
-        </div>
-      </div>
-
-      <!-- STEP 3 – Assign Doctor -->
-      <div class="form-panel" id="panel3">
-        <div class="form-section-title">Select Attending Doctor</div>
-        <p style="font-size:13px;color:var(--gray-500);margin-bottom:4px;">Choose the doctor responsible for this patient's care.</p>
-        <div class="doctor-chips" id="doctorChips">
-          <div class="doc-chip" onclick="pickDoctor(this,'Dr. Sarah Johnson','Cardiologist')">
-            <div class="doc-chip-av" style="background:#dbeafe;color:#1d4ed8;">SJ</div>
-            Dr. Sarah Johnson <span style="font-weight:400;font-size:12px;color:inherit;opacity:.7;">· Cardiologist</span>
-          </div>
-          <div class="doc-chip" onclick="pickDoctor(this,'Dr. Michael Brown','Neurologist')">
-            <div class="doc-chip-av" style="background:#d1fae5;color:#065f46;">MB</div>
-            Dr. Michael Brown <span style="font-weight:400;font-size:12px;color:inherit;opacity:.7;">· Neurologist</span>
-          </div>
-          <div class="doc-chip" onclick="pickDoctor(this,'Dr. Emily Davis','Pediatrician')">
-            <div class="doc-chip-av" style="background:#ede9fe;color:#5b21b6;">ED</div>
-            Dr. Emily Davis <span style="font-weight:400;font-size:12px;color:inherit;opacity:.7;">· Pediatrician</span>
-          </div>
-          <div class="doc-chip" onclick="pickDoctor(this,'Dr. Daniel Wilson','Orthopedic')">
-            <div class="doc-chip-av" style="background:#fef3c7;color:#92400e;">DW</div>
-            Dr. Daniel Wilson <span style="font-weight:400;font-size:12px;color:inherit;opacity:.7;">· Orthopedic</span>
-          </div>
-        </div>
-        <div class="field-error" id="e_doctor" style="margin-top:4px;"></div>
-
-        <div style="margin-top:8px;">
-          <div class="form-group">
-            <label>Appointment Date & Time <span class="req">*</span></label>
-            <input class="form-control" id="f_schedule" type="datetime-local" onchange="clearErr(this)">
-            <div class="field-error" id="e_schedule"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 4 – Review -->
-      <div class="form-panel" id="panel4">
-        <div class="form-section-title">Review & Confirm</div>
-        <p style="font-size:13px;color:var(--gray-500);margin-bottom:8px;">Please verify the information before adding the patient.</p>
-        <div class="review-card">
-          <div class="review-row"><span class="rk">Full Name</span><span class="rv" id="rv_name">—</span></div>
-          <div class="review-row"><span class="rk">Date of Birth</span><span class="rv" id="rv_dob">—</span></div>
-          <div class="review-row"><span class="rk">Gender</span><span class="rv" id="rv_gender">—</span></div>
-          <div class="review-row"><span class="rk">Phone</span><span class="rv" id="rv_phone">—</span></div>
-          <div class="review-row"><span class="rk">Email</span><span class="rv" id="rv_email">—</span></div>
-          <div class="review-row"><span class="rk">Blood Group</span><span class="rv" id="rv_blood">—</span></div>
-          <div class="review-row"><span class="rk">Type</span><span class="rv" id="rv_type">—</span></div>
-          <div class="review-row"><span class="rk">Health Issue</span><span class="rv" id="rv_issue">—</span></div>
-          <div class="review-row"><span class="rk">Doctor</span><span class="rv" id="rv_doctor">—</span></div>
-          <div class="review-row"><span class="rk">Schedule</span><span class="rv" id="rv_schedule">—</span></div>
-        </div>
-      </div>
-
-      <!-- SUCCESS -->
-      <div class="success-panel" id="successPanel">
-        <div class="success-icon">✅</div>
-        <h3>Patient Added!</h3>
-        <p id="successMsg">The patient has been successfully registered and assigned to their doctor.</p>
-        <button class="btn-next green" onclick="closeModal()" style="margin:0;">Done</button>
-      </div>
-
-    </div><!-- /modal-body -->
-
-    <!-- FOOTER -->
-    <div class="modal-footer" id="modalFooter">
-      <button class="btn-back" id="btnBack" onclick="prevStep()" style="visibility:hidden;">
-        ← Back
-      </button>
-      <button class="btn-next" id="btnNext" onclick="nextStep()">
-        Next →
-      </button>
-    </div>
-
-  </div>
 </div>
 
 <script>
-  // ── Live date ──
-  const d = new Date();
-  document.getElementById('today-date').textContent = d.toLocaleDateString('en-US', {
-    day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
+
+  const dateBox = document.getElementById("today-date");
+
+  const today = new Date();
+
+  dateBox.innerHTML = today.toLocaleDateString("en-US",{
+    weekday:"long",
+    day:"numeric",
+    month:"long",
+    year:"numeric"
   });
 
-  // ── State ──
-  let currentDoctor = 'all';
-
-  // ── Count patients per doctor on load ──
-  function buildCounts() {
-    const rows = document.querySelectorAll('#apptBody tr');
-    const counts = {};
-    rows.forEach(r => {
-      const doc = r.dataset.doctor;
-      if (doc) counts[doc] = (counts[doc] || 0) + 1;
-    });
-    Object.entries(counts).forEach(([doc, n]) => {
-      const el = document.getElementById('count-' + doc);
-      if (el) el.textContent = n;
-    });
-  }
-
-    // ── Filter logic ──
-  // Note: backend stores doctor in appointments.doctor either as a doctor username (e.g. doctor1)
-  // OR as a display name (e.g. "Dr. Sarah Johnson"). The dashboard dropdown hardcodes display
-  // names, so we treat any non-"all" filter as "show only rows whose doctor matches either the
-  // display name OR the underlying username/identifier".
-  function filterTable(doctorName) {
-    const rows = document.querySelectorAll('#apptBody tr');
-    let visible = 0;
-    let emergencyCount = 0;
-    const uniquePatients = new Set();
-
-    rows.forEach(r => {
-      const rowDoc = r.dataset.doctor || '';
-
-      // If doctorName is a display name and DB stores username (doctor1), they won't match.
-      // So we fall back to a broader match when we can.
-      let show;
-      if (doctorName === 'all') {
-        show = true;
-      } else {
-        // direct match
-        show = rowDoc === doctorName;
-
-        // fuzzy match: handle legacy where UI passes only initials/name parts
-        if (!show) {
-          const rowDocLower = String(rowDoc).toLowerCase();
-          const filterLower = String(doctorName).toLowerCase();
-          show = rowDocLower.includes(filterLower) || filterLower.includes(rowDocLower);
-        }
-      }
-
-      r.classList.toggle('hidden-row', !show);
-      if (show) {
-        visible++;
-        if (r.dataset.type === 'Emergency') emergencyCount++;
-        const nameEl = r.querySelector('.p-name');
-        if (nameEl) uniquePatients.add(nameEl.textContent.trim());
-        // Brief pop highlight
-        r.classList.remove('just-filtered');
-        void r.offsetWidth;
-        if (doctorName !== 'all') r.classList.add('just-filtered');
-      }
-    });
-
-
-    // No results state
-    document.getElementById('noResults').classList.toggle('visible', visible === 0);
-
-    // Update stats
-    document.getElementById('statTotal').textContent = visible;
-    document.getElementById('statPatients').textContent = uniquePatients.size;
-    document.getElementById('statEmergency').textContent = emergencyCount;
-    document.getElementById('notifApptCount').textContent = `You have ${visible} appointment(s) ${doctorName === 'all' ? 'booked' : 'for this doctor'}`;
-    document.getElementById('notifEmergency').textContent = `${emergencyCount} emergency case(s) active`;
-
-    // Context label
-    const ctxLabel = document.getElementById('tableContextLabel');
-    if (doctorName !== 'all') {
-      ctxLabel.style.display = 'flex';
-      document.getElementById('contextDoctorName').textContent = doctorName;
-      document.getElementById('contextCount').textContent = visible + ' patient' + (visible !== 1 ? 's' : '');
-    } else {
-      ctxLabel.style.display = 'none';
-    }
-  }
-
-  // ── Select doctor ──
-  function selectDoctor(e, key, displayName, initials, bg, color, role) {
-    e.stopPropagation();
-    currentDoctor = key;
-
-    // Topbar avatar
-    const avatar = document.getElementById('topbarAvatar');
-    avatar.textContent = initials;
-    avatar.style.background = bg;
-    avatar.style.color = color;
-    avatar.style.fontWeight = '700';
-    document.getElementById('topbarName').textContent = displayName === 'All Doctors' ? 'All Doctors' : initials === 'DR' ? 'All Doctors' : displayName.split(' ').slice(0,2).join(' ');
-    document.getElementById('topbarRole').textContent = role;
-
-    // Page title
-    if (key === 'all') {
-      document.getElementById('pageTitle').textContent = 'Welcome, Doctor 👋';
-      document.getElementById('pageSubtitle').textContent = "Here's what's happening with your practice today.";
-      document.getElementById('tableTitle').textContent = 'Booked Appointments';
-    } else {
-      document.getElementById('pageTitle').textContent = displayName + ' 👩‍⚕️';
-      document.getElementById('pageSubtitle').textContent = role + ' · Showing assigned patients only';
-      document.getElementById('tableTitle').textContent = displayName + "'s Patients";
-    }
-
-    // Filter banner
-    const banner = document.getElementById('filterBanner');
-    if (key !== 'all') {
-      banner.classList.add('visible');
-      const ba = document.getElementById('bannerAvatar');
-      ba.textContent = initials;
-      ba.style.background = bg;
-      ba.style.color = color;
-      document.getElementById('bannerName').textContent = displayName;
-      // count
-      const rows = document.querySelectorAll('#apptBody tr');
-      let n = 0;
-      rows.forEach(r => { if (r.dataset.doctor === key) n++; });
-      document.getElementById('bannerCount').textContent = ' — ' + n + ' patient' + (n !== 1 ? 's' : '') + ' assigned';
-    } else {
-      banner.classList.remove('visible');
-    }
-
-    // Highlight selected menu item + checkmark
-    document.querySelectorAll('.doc-menu-item').forEach(el => {
-      el.classList.remove('selected');
-      const chk = el.querySelector('svg[id^="check"]');
-      if (chk) chk.style.display = 'none';
-    });
-    // find the clicked item
-    const clicked = e.currentTarget || e.target.closest('.doc-menu-item');
-    if (clicked) {
-      clicked.classList.add('selected');
-      const chk = clicked.querySelector('svg');
-      if (chk) chk.style.display = 'block';
-    }
-
-    filterTable(key);
-    document.getElementById('doctorMenu').style.display = 'none';
-  }
-
-  function clearFilter() {
-    // Simulate clicking "All Doctors"
-    const allItem = document.getElementById('menuAll');
-    selectDoctor({ stopPropagation: ()=>{}, currentTarget: allItem }, 'all', 'All Doctors', 'DR', 'linear-gradient(135deg,#3b82f6,#8b5cf6)', '#fff', 'MEDSYS');
-  }
-
-  // ── Dropdown toggle ──
-  function toggleDoctorMenu() {
-    const menu = document.getElementById('doctorMenu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-  }
-  document.addEventListener('click', function(e) {
-    const chip = document.getElementById('doctorChip');
-    if (chip && !chip.contains(e.target)) {
-      document.getElementById('doctorMenu').style.display = 'none';
-    }
-  });
-
-  // ── Search filter ──
-  function searchTable(query) {
-    const q = query.toLowerCase().trim();
-    const rows = document.querySelectorAll('#apptBody tr');
-    rows.forEach(r => {
-      if (currentDoctor !== 'all' && r.dataset.doctor !== currentDoctor) return; // respect doctor filter
-      const text = r.textContent.toLowerCase();
-      r.classList.toggle('hidden-row', q !== '' && !text.includes(q));
-    });
-  }
-
-  // ── Init ──
-  buildCounts();
-
-  // ════════════════════════════════════════
-  // ADD PATIENT MODAL
-  // ════════════════════════════════════════
-  let currentStep = 1;
-  const TOTAL_STEPS = 4;
-  let selectedDoctor = '';
-
-  function openModal() {
-    resetModal();
-    document.getElementById('patientModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeModal() {
-    document.getElementById('patientModal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function closeModalAndRedirect() {
-    closeModal();
-    window.location.href = '/doctor';
-  }
-  function handleOverlayClick(e) {
-    if (e.target === document.getElementById('patientModal')) closeModal();
-  }
-  function resetModal() {
-    currentStep = 1;
-    selectedDoctor = '';
-    // reset forms
-    ['f_fname','f_lname','f_dob','f_gender','f_phone','f_email','f_address',
-     'f_blood','f_type','f_issue','f_allergies','f_meds','f_notes','f_schedule'
-    ].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-    document.querySelectorAll('.doc-chip').forEach(c => c.classList.remove('selected'));
-    document.querySelectorAll('.field-error').forEach(e => e.textContent='');
-    document.querySelectorAll('.form-control').forEach(c => c.classList.remove('error'));
-    document.getElementById('successPanel').classList.remove('active');
-    document.getElementById('modalFooter').style.display = 'flex';
-    renderStep(1);
-  }
-
-  function renderStep(s) {
-    // panels
-    for (let i = 1; i <= TOTAL_STEPS; i++) {
-      const p = document.getElementById('panel' + i);
-      if (p) p.classList.toggle('active', i === s);
-    }
-    document.getElementById('successPanel').classList.remove('active');
-
-    // step indicators
-    for (let i = 1; i <= TOTAL_STEPS; i++) {
-      const sn = document.getElementById('sn' + i);
-      const sl = document.getElementById('sl' + i);
-      if (i < s)       { sn.className='step-num done';   sl.className='step-label done';   sn.textContent='✓'; }
-      else if (i === s){ sn.className='step-num active'; sl.className='step-label active'; sn.textContent=i; }
-      else             { sn.className='step-num';        sl.className='step-label';        sn.textContent=i; }
-    }
-    for (let i = 1; i < TOTAL_STEPS; i++) {
-      const ln = document.getElementById('line' + i);
-      if (ln) ln.classList.toggle('done', i < s);
-    }
-
-    // back button
-    document.getElementById('btnBack').style.visibility = s > 1 ? 'visible' : 'hidden';
-
-    // next button
-    const btnNext = document.getElementById('btnNext');
-    if (s === TOTAL_STEPS) {
-      btnNext.textContent = '✓ Confirm & Add Patient';
-      btnNext.classList.add('green');
-    } else {
-      btnNext.textContent = 'Next →';
-      btnNext.classList.remove('green');
-    }
-  }
-
-  function validateStep(s) {
-    let valid = true;
-    const req = (id, errId, msg) => {
-      const el = document.getElementById(id);
-      const val = el ? el.value.trim() : '';
-      if (!val) {
-        document.getElementById(errId).textContent = msg;
-        if (el) el.classList.add('error');
-        valid = false;
-      }
-    };
-    if (s === 1) {
-      req('f_fname','e_fname','First name is required');
-      req('f_lname','e_lname','Last name is required');
-      req('f_dob','e_dob','Date of birth is required');
-      req('f_gender','e_gender','Please select a gender');
-      req('f_phone','e_phone','Phone number is required');
-    }
-    if (s === 2) {
-      req('f_type','e_type','Appointment type is required');
-      req('f_issue','e_issue','Health issue is required');
-    }
-    if (s === 3) {
-      if (!selectedDoctor) {
-        document.getElementById('e_doctor').textContent = 'Please select a doctor';
-        valid = false;
-      }
-      req('f_schedule','e_schedule','Please select a date & time');
-    }
-    return valid;
-  }
-
-  function clearErr(el) {
-    el.classList.remove('error');
-    const errEl = document.getElementById('e_' + el.id.replace('f_',''));
-    if (errEl) errEl.textContent = '';
-  }
-
-  function nextStep() {
-    if (!validateStep(currentStep)) return;
-    if (currentStep === TOTAL_STEPS) {
-      submitPatient();
-      return;
-    }
-    if (currentStep === TOTAL_STEPS - 1) populateReview();
-    currentStep++;
-    renderStep(currentStep);
-  }
-
-  function prevStep() {
-    if (currentStep <= 1) return;
-    currentStep--;
-    renderStep(currentStep);
-  }
-
-  function pickDoctor(el, name, specialty) {
-    document.querySelectorAll('.doc-chip').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedDoctor = name;
-    document.getElementById('e_doctor').textContent = '';
-  }
-
-  function populateReview() {
-    const v = id => (document.getElementById(id).value.trim() || '—');
-    document.getElementById('rv_name').textContent     = v('f_fname') + ' ' + v('f_lname');
-    document.getElementById('rv_dob').textContent      = v('f_dob');
-    document.getElementById('rv_gender').textContent   = v('f_gender');
-    document.getElementById('rv_phone').textContent    = v('f_phone');
-    document.getElementById('rv_email').textContent    = v('f_email') || '—';
-    document.getElementById('rv_blood').textContent    = v('f_blood') || 'Not specified';
-    document.getElementById('rv_type').textContent     = v('f_type');
-    document.getElementById('rv_issue').textContent    = v('f_issue');
-    document.getElementById('rv_doctor').textContent   = selectedDoctor || '—';
-    const sched = document.getElementById('f_schedule').value;
-    document.getElementById('rv_schedule').textContent = sched ? new Date(sched).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}) : '—';
-  }
-
-  async function submitPatient() {
-    const fname    = document.getElementById('f_fname').value.trim();
-    const lname    = document.getElementById('f_lname').value.trim();
-    const fullName = fname + ' ' + lname;
-    const email    = document.getElementById('f_email').value.trim();
-    const phone    = document.getElementById('f_phone').value.trim();
-    const dob      = document.getElementById('f_dob').value.trim();
-    const gender   = document.getElementById('f_gender').value.trim();
-    const address  = document.getElementById('f_address').value.trim();
-    const blood    = document.getElementById('f_blood').value.trim();
-    const type     = document.getElementById('f_type').value;
-    const issue    = document.getElementById('f_issue').value.trim();
-    const allergies= document.getElementById('f_allergies').value.trim();
-    const meds     = document.getElementById('f_meds').value.trim();
-    const notes    = document.getElementById('f_notes').value.trim();
-    const sched    = document.getElementById('f_schedule').value;
-
-    // Disable the confirm button while saving
-    const btnNext = document.getElementById('btnNext');
-    btnNext.textContent = 'Saving…';
-    btnNext.disabled = true;
-
-    try {
-      const res = await fetch('/doctor/add-patient', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstname: fname, lastname: lname,
-          email, phone, dob, gender, address, blood,
-          appointment_type: type, issue, allergies, meds, notes,
-          doctor: selectedDoctor, time_schedule: sched
-        })
-      });
-
-      const result = await res.json();
-
-      if (!res.ok || result.status !== 'ok') {
-        alert('Error saving patient: ' + (result.message || 'Unknown error'));
-        btnNext.textContent = '✓ Confirm & Add Patient';
-        btnNext.disabled = false;
-        return;
-      }
-
-      // ── Add new row to the live table ──
-      const newId     = result.id;
-      const schedStr  = sched ? new Date(sched).toLocaleString('en-US',{dateStyle:'short',timeStyle:'short'}) : '—';
-      const typeClass = {OPD:'opd',IPD:'ipd',Emergency:'emr',Tele:'tele'}[type] || 'other';
-      const initial   = fname[0].toUpperCase();
-      const tbody     = document.getElementById('apptBody');
-      const rowCount  = tbody.querySelectorAll('tr').length + 1;
-
-      const tr = document.createElement('tr');
-      tr.dataset.doctor = selectedDoctor;
-      tr.dataset.type   = type;
-      tr.innerHTML = `
-        <td style="color:var(--gray-400);font-weight:600;">${newId}</td>
-        <td><div class="patient-cell"><div class="p-avatar">${initial}</div><span class="p-name">${fullName}</span></div></td>
-        <td style="font-weight:500;">${selectedDoctor}</td>
-        <td><span class="type-badge ${typeClass}">${type}</span></td>
-        <td style="font-size:13px;color:var(--gray-600);">${schedStr}</td>
-        <td><span class="issue-tag">${issue}</span></td>
-        <td style="font-size:12px;color:var(--gray-400);">Just now</td>
-      `;
-      tbody.appendChild(tr);
-
-      buildCounts();
-      filterTable(currentDoctor);
-
-      // ── Show success screen ──
-      for (let i = 1; i <= TOTAL_STEPS; i++) {
-        const p = document.getElementById('panel' + i);
-        if (p) p.classList.remove('active');
-      }
-      document.getElementById('successPanel').classList.add('active');
-      document.getElementById('modalFooter').style.display = 'none';
-      document.getElementById('successMsg').textContent =
-        `${fullName} has been registered and assigned to ${selectedDoctor}.`;
-
-    } catch (err) {
-      alert('Network error: ' + err.message);
-      btnNext.textContent = '✓ Confirm & Add Patient';
-      btnNext.disabled = false;
-    }
-  }
 </script>
+
 </body>
 </html>

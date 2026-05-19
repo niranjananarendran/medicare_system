@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='contact.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MEDSYS - Contact Us</title>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="MEDSYS Logo">
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="/" >Home</a></li>
+      <li><a href="/about">About Us</a></li>
+
+      <li>
+        <a href="/resources">Resources</a>
+        <div class="dropdown-content">
+          <a href="/sysreq">System Requirements</a>
+          <a href="/resources#downloads">Downloads</a>
+          <a href="/resources#faq">FAQ</a>
+          <a href="/resources#documentation">Documentation</a>
+          <a href="/resources#support">Support</a>
+        </div>
+      </li>
+
+      <li><a href="/appointment">Appointment Booking</a></li>
+
+      <li>
+        <a href="/contact" class="active">Contact Us</a>
+      </li>
+    </ul>
+
+    <div class="login-btn">
+      <ul class="nav-links" style="flex-grow: 0;">
+        <li><a href="/login">Login</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PAGE HERO -->
+  <div class="contact-hero">
+    <div class="contact-hero-inner">
+      <h1>Contact <span>MEDSYS</span></h1>
+      <p>
+        Need help with onboarding, scheduling, billing, or system setup?
+        Send us a message and our team will get back to you.
+      </p>
+      <div class="contact-hero-badges">
+        <span class="badge">Response within 24 hours</span>
+        <span class="badge">Technical Support 24/7</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="contact-content">
+    <section class="contact-grid">
+
+      <div class="contact-card" id="locations">
+        <h2>Contact Information</h2>
+
+        <div class="contact-row">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="label">Email</div>
+            <div class="value"><a href="mailto:support@medsys.com">support@medsys.com</a></div>
+          </div>
+        </div>
+
+        <div class="contact-row">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="label">Phone</div>
+            <div class="value">+1 (800) 123-4567</div>
+          </div>
+        </div>
+
+        <div class="contact-row">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="label">Main Office</div>
+            <div class="value">123 Health Avenue, Medical City, NY 10001, USA</div>
+          </div>
+        </div>
+
+        <div class="contact-note">
+          For urgent issues, call our technical support line and we’ll prioritize your request.
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <h2>Send a Message</h2>
+
+        <form class="contact-form" method="POST" action="/contact">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+          </div>
+
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="How can we help?" required></textarea>
+          </div>
+
+          <button class="submit-btn" type="submit">Submit</button>
+
+          <div class="form-hint">
+            By submitting, you agree to be contacted about your request.
+          </div>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="flash-wrap">
+                {% for category, message in messages %}
+                  <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+
+          {% if request.args.get('submitted') == '1' %}
+            <div class="flash flash-success">Message received. We’ll contact you shortly.</div>
+          {% endif %}
+        </form>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer-main">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>About MEDSYS</h4>
+        <p>MEDSYS is a trusted Hospital Management System built to simplify operations across patient records, billing, pharmacy, and staff management — all under one secure platform.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Information</h4>
+        <div class="info-item"><span class="icon">&#9993;</span><span>support@medsys.com</span></div>
+        <div class="info-item"><span class="icon">&#9742;</span><span>+1 (800) 123-4567</span></div>
+        <div class="info-item"><span class="icon">&#128205;</span><span>123 Health Avenue, Medical City, NY 10001, USA</span></div>
+        <div class="info-item"><span class="icon">&#128231;</span><span>info@medsys.com</span></div>
+      </div>
+      <div class="footer-col">
+        <h4>Support Hours</h4>
+        <div class="footer-hours">
+          <div class="row"><span>Monday – Friday</span><span>8:00 AM – 8:00 PM</span></div>
+          <div class="row"><span>Saturday</span><span>9:00 AM – 5:00 PM</span></div>
+          <div class="row"><span>Sunday</span><span>Emergency Only</span></div>
+          <div class="row"><span>Technical Support</span><span>24 / 7</span></div>
+        </div>
+      </div>
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-bottom">
+      <span>&copy; 2026 MEDSYS Hospital Management System. All Rights Reserved.</span>
+      <span class="footer-tagline">Empowering Healthcare, One Hospital at a Time.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

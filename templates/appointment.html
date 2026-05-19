@@ -5,169 +5,343 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MEDSYS - Appointment Booking</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .box {
+            width: 100%;
+            max-width: 700px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .box-header {
+            margin-bottom: 20px;
+        }
+
+        .box-header h2 {
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f9fafb;
+            box-sizing: border-box;
+        }
+
+        .field textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="navbar">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="MEDSYS Logo">
+
+<div class="content">
+    <div class="box">
+
+        <div class="box-header">
+            <h2>Book an Appointment</h2>
         </div>
-        <ul class="nav-links">
-            <li><a href="/" class="active">Home</a></li>
-            <li><a href="/about">About Us</a></li>
-            <li>
-                <a href="/resources">Resources</a>
-                <div class="dropdown-content">
-                    <a href="/sysreq">System Requirements</a>
-                    <a href="/resources#downloads">Downloads</a>
-                    <a href="/resources#faq">FAQ</a>
-                    <a href="/resources#documentation">Documentation</a>
-                    <a href="/resources#support">Support</a>
+
+        <p>Please fill the form below. We will get back to you shortly.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div style="margin: 12px 0;">
+              {% for category, message in messages %}
+                <div style="padding:10px 12px;
+                            border-radius:8px;
+                            margin-bottom:8px;
+                            background:#f3f4f6;
+                            border:1px solid #e5e7eb;">
+                  <strong>{{ category|capitalize }}:</strong> {{ message }}
                 </div>
-            </li>
-            <li><a href="/appointment" class="active">Appointment Booking</a></li>
-            <li>
-                <a href="#">Contact Us</a>
-                <div class="dropdown-content">
-                    <a href="#">Email</a>
-                    <a href="#">Locations</a>
-                </div>
-            </li>
-        </ul>
-        <div class="login-btn">
-            <ul class="nav-links" style="flex-grow: 0;">
-                <li><a href="/login">Login</a></li>
-            </ul>
-        </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="/appointment" method="POST">
+
+            <div class="field">
+                <label for="appointment_type">Appointment Type</label>
+                <select id="appointment_type" name="appointment_type" required>
+                    <option value="new" selected>New Appointment</option>
+                    <option value="followup">Revisit / Follow-up</option>
+                </select>
+            </div>
+
+            <div class="field" id="previous_appointment_field" style="display:none;">
+                <label for="previous_appointment_id">
+                    Previous appointment reference (optional)
+                </label>
+
+                <input id="previous_appointment_id"
+                       name="previous_appointment_id"
+                       type="text"
+                       placeholder="Enter previous appointment id/reference">
+            </div>
+
+            <div class="field">
+                <label for="name">Name</label>
+                <input id="name"
+                       name="name"
+                       type="text"
+                       placeholder="Enter your full name"
+                       required>
+            </div>
+
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email"
+                       name="email"
+                       type="email"
+                       placeholder="Enter your email"
+                       required>
+            </div>
+
+            <div class="field">
+                <label for="phone">Phone Number</label>
+                <input id="phone"
+                       name="phone"
+                       type="tel"
+                       placeholder="Enter your phone number"
+                       required
+                       maxlength="15"
+                       pattern="^[0-9]{7,15}$">
+            </div>
+
+            <div class="field">
+                <label for="doctor">Select a Doctor</label>
+
+                <select id="doctor" name="doctor" required>
+                    <option value="">-- Choose a doctor --</option>
+                    {% if doctors %}
+                        {% for d in doctors %}
+                            <option value="{{ d['username'] }}">
+                                {{ d['firstname'] }} {{ d['lastname'] }}
+                            </option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="appointment_date">Appointment Date</label>
+
+                <input id="appointment_date"
+                       name="appointment_date"
+                       type="date"
+                       required>
+            </div>
+
+            <div class="field">
+                <label for="appointment_slot">Appointment Time Slot</label>
+
+                <select id="appointment_slot"
+                        name="appointment_slot"
+                        required>
+                    <option value="">-- Select a time slot --</option>
+                </select>
+            </div>
+
+            <!-- Hidden backend field -->
+            <input type="hidden"
+                   id="time_schedule"
+                   name="time_schedule"
+                   value="">
+
+            <div class="field">
+                <label for="issue">Health Issue</label>
+
+                <textarea id="issue"
+                          name="issue"
+                          rows="4"
+                          placeholder="Describe your health issue"
+                          required></textarea>
+            </div>
+
+            <button class="btn" type="submit">
+                Submit Appointment
+            </button>
+
+        </form>
     </div>
+</div>
 
-                <div class="content">
-        <div class="box">
-            <div class="box-header">
-                <h2>Book an Appointment</h2>
-                <a class="box-close" href="/receptionist/patients" aria-label="Close">✕</a>
-            </div>
+<script>
+    (function () {
+        const typeSelect = document.getElementById('appointment_type');
+        const prevField = document.getElementById('previous_appointment_field');
 
-            <p>Please fill the form below. We will get back to you shortly.</p>
+        function sync() {
+            prevField.style.display =
+                (typeSelect.value === 'followup')
+                ? 'block'
+                : 'none';
+        }
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                <div style="margin: 12px 0;">
-                  {% for category, message in messages %}
-                    <div style="padding:10px 12px; border-radius:8px; margin-bottom:8px; background: #f3f4f6; border: 1px solid #e5e7eb;">
-                      <strong>{{ category|capitalize }}:</strong> {{ message }}
-                    </div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            {% endwith %}
+        typeSelect.addEventListener('change', sync);
+        sync();
+    })();
 
-            <form action="/appointment" method="POST">
-                <div class="field">
-                    <label for="appointment_type">Appointment Type</label>
-                    <select id="appointment_type" name="appointment_type" required>
-                        <option value="new" selected>New Appointment</option>
-                        <option value="followup">Revisit / Follow-up</option>
-                    </select>
-                </div>
+    (function () {
 
-                <div class="field" id="previous_appointment_field" style="display:none;">
-                    <label for="previous_appointment_id">Previous appointment reference (optional)</label>
-                    <input id="previous_appointment_id" name="previous_appointment_id" type="text" placeholder="Enter previous appointment id/reference">
-                </div>
+        const dateInput = document.getElementById('appointment_date');
+        const slotSelect = document.getElementById('appointment_slot');
+        const doctorSelect = document.getElementById('doctor');
+        const hidden = document.getElementById('time_schedule');
 
-                <div class="field">
-                    <label for="name">Name</label>
-                    <input id="name" name="name" type="text" placeholder="Enter your full name" required>
-                </div>
+        function pad2(n) {
+            return String(n).padStart(2, '0');
+        }
 
+        function minutesToHHMM(mins) {
+            const hh = Math.floor(mins / 60);
+            const mm = mins % 60;
+            return `${pad2(hh)}:${pad2(mm)}`;
+        }
 
-                <div class="field">
-                    <label for="email">Email</label>
-                    <input id="email" name="email" type="email" placeholder="Enter your email" required>
-                </div>
+        function buildSlotsForDate(d) {
 
-                <div class="field">
-                    <label for="phone">Phone Number</label>
-                    <input id="phone" name="phone" type="tel" placeholder="Enter your phone number" required maxlength="15" pattern="^[0-9]{7,15}$">
-                </div>
+            const day = d.getDay();
 
-                <div class="field">
-                    <label for="doctor">Select a Doctor</label>
-                    <select id="doctor" name="doctor" required>
-                        <option value="">-- Choose a doctor --</option>
-                        <option value="Dr. Sarah Johnson">Dr. Sarah Johnson</option>
-                        <option value="Dr. Michael Brown">Dr. Michael Brown</option>
-                        <option value="Dr. Emily Davis">Dr. Emily Davis</option>
-                        <option value="Dr. Daniel Wilson">Dr. Daniel Wilson</option>
-                    </select>
-                </div>
+            let startMin = 0;
+            let endMin = 0;
 
-                <div class="field">
-                    <label for="time_schedule">Appointment Time Schedule</label>
-                    <select id="time_schedule" name="time_schedule" required>
-                        <option value="">-- Select schedule --</option>
-                        <option value="mon-fri">Monday – Friday (8:00 AM – 8:00 PM)</option>
-                        <option value="sat">Saturday (9:00 AM – 5:00 PM)</option>
-                        <option value="sun">Sunday (Emergency Only)</option>
-                    </select>
-                </div>
+            // Mon-Fri
+            if (day >= 1 && day <= 5) {
+                startMin = 8 * 60;
+                endMin = 20 * 60;
+            }
 
-                <div class="field">
-                    <label for="issue">Health Issue</label>
-                    <textarea id="issue" name="issue" rows="4" placeholder="Describe your health issue" required style="width:100%; padding:8px 10px; font-size:13px; border-radius:6px; border:1px solid #ccc; background:#f9f9f9;"></textarea>
-                </div>
+            // Saturday
+            else if (day === 6) {
+                startMin = 9 * 60;
+                endMin = 17 * 60;
+            }
 
-                <button class="btn" type="submit">Submit Appointment</button>
-            </form>
+            // Sunday
+            else {
+                startMin = 10 * 60;
+                endMin = 14 * 60;
+            }
 
-            <script>
-                (function () {
-                    const typeSelect = document.getElementById('appointment_type');
-                    const prevField = document.getElementById('previous_appointment_field');
+            const slots = [];
 
-                    function sync() {
-                        if (!typeSelect || !prevField) return;
-                        prevField.style.display = (typeSelect.value === 'followup') ? 'block' : 'none';
-                    }
+            for (let t = startMin; t <= endMin; t += 30) {
+                slots.push(t);
+            }
 
-                    if (typeSelect) {
-                        typeSelect.addEventListener('change', sync);
-                        sync();
-                    }
-                })();
-            </script>
-        </div>
-    </div>
+            return slots;
+        }
 
-    <footer class="footer-main">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>About MEDSYS</h4>
-                <p>MEDSYS is a trusted Hospital Management System built to simplify operations across patient records, billing, pharmacy, and staff management — all under one secure platform.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Contact Information</h4>
-                <div class="info-item"><span class="icon">&#9993;</span><span>support@medsys.com</span></div>
-                <div class="info-item"><span class="icon">&#9742;</span><span>+1 (800) 123-4567</span></div>
-                <div class="info-item"><span class="icon">&#128205;</span><span>123 Health Avenue, Medical City, NY 10001, USA</span></div>
-                <div class="info-item"><span class="icon">&#128231;</span><span>info@medsys.com</span></div>
-            </div>
-            <div class="footer-col">
-                <h4>Support Hours</h4>
-                <div class="footer-hours">
-                    <div class="row"><span>Monday – Friday</span><span>8:00 AM – 8:00 PM</span></div>
-                    <div class="row"><span>Saturday</span><span>9:00 AM – 5:00 PM</span></div>
-                    <div class="row"><span>Sunday</span><span>Emergency Only</span></div>
-                    <div class="row"><span>Technical Support</span><span>24 / 7</span></div>
-                </div>
-            </div>
-        </div>
-        <hr class="footer-divider">
-        <div class="footer-bottom">
-            <span>&copy; 2026 MEDSYS Hospital Management System. All Rights Reserved.</span>
-            <span class="footer-tagline">Empowering Healthcare, One Hospital at a Time.</span>
-        </div>
-    </footer>
+        function clearSlots() {
+
+            slotSelect.innerHTML =
+                '<option value="">-- Select a time slot --</option>';
+
+            hidden.value = '';
+        }
+
+        function generateSlots() {
+
+            const dateStr = dateInput.value;
+            const doctor = doctorSelect.value;
+
+            if (!dateStr || !doctor) {
+                clearSlots();
+                return;
+            }
+
+            const d = new Date(dateStr + 'T00:00:00');
+
+            const slots = buildSlotsForDate(d);
+
+            slotSelect.innerHTML =
+                '<option value="">-- Select a time slot --</option>';
+
+            slots.forEach((t) => {
+
+                const time = minutesToHHMM(t);
+
+                const opt = document.createElement('option');
+
+                opt.value = time;
+                opt.textContent = time;
+
+                slotSelect.appendChild(opt);
+            });
+        }
+
+        function syncHidden() {
+
+            if (!dateInput.value || !slotSelect.value) {
+                hidden.value = '';
+                return;
+            }
+
+            hidden.value =
+                `${dateInput.value} ${slotSelect.value}`;
+        }
+
+        dateInput.addEventListener('change', generateSlots);
+        doctorSelect.addEventListener('change', generateSlots);
+        slotSelect.addEventListener('change', syncHidden);
+
+        clearSlots();
+
+    })();
+</script>
+
 </body>
 </html>
-

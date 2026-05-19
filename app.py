@@ -233,18 +233,27 @@ def doctor():
     if not session.get('is_doctor'):
         return redirect('/doctor/login')
 
-    doctor_username = session.get('doctor_username')
+    doctor_username = session.get('doctor_username') or ''
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
+    doctor_display_name = "Doctor"
+
     if doctor_username:
-        # Show only appointments assigned to the logged-in doctor.
-        # In /doctor/add-patient we store doctor in appointments.doctor as:
-        #   - session['doctor_username'] when available (e.g. "doctor1")
-        #   - otherwise the doctor text provided by the UI.
-        # To keep this page consistent, filter by the stable doctor_username.
+        cursor.execute(
+            '''
+            SELECT firstname, lastname
+            FROM users
+            WHERE username=?
+            ''',
+            (doctor_username,)
+        )
+        doc_user = cursor.fetchone()
+        if doc_user:
+            doctor_display_name = f"{doc_user['firstname']} {doc_user['lastname']}".strip()
+
         cursor.execute(
             '''
             SELECT * FROM appointments
@@ -257,11 +266,106 @@ def doctor():
     else:
         cursor.execute('SELECT * FROM appointments ORDER BY created_at DESC LIMIT 50')
 
-
     appointments = cursor.fetchall()
     conn.close()
 
-    return render_template('doctor_dashboard.html', appointments=appointments)
+    patients = []
+    if appointments:
+        seen = set()
+        for appt in appointments:
+            if appt['patient_name'] and appt['patient_name'] not in seen:
+                seen.add(appt['patient_name'])
+                patients.append({
+                    'patient_name': appt['patient_name'],
+                    'appointment_type': appt['appointment_type'],
+                    'time_schedule': appt['time_schedule'],
+                })
+
+    return render_template(
+        'doctor_dashboard.html',
+        appointments=appointments,
+        patients=patients,
+        doctor_display_name=doctor_display_name,
+        active_page='dashboard'
+    )
+
+
+@app.route('/doctor/patients')
+def doctor_patients():
+    if not session.get('is_doctor'):
+        return redirect('/doctor/login')
+
+    doctor_username = session.get('doctor_username') or ''
+
+    print("[/doctor/patients] is_doctor=True")
+    print("[/doctor/patients] session doctor_username =", doctor_username)
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    doctor_display_name = "Doctor"
+    if doctor_username:
+        cursor.execute(
+            '''
+            SELECT firstname, lastname
+            FROM users
+            WHERE username=?
+            ''',
+            (doctor_username,)
+        )
+        doc_user = cursor.fetchone()
+        if doc_user:
+            doctor_display_name = f"{doc_user['firstname']} {doc_user['lastname']}".strip()
+
+        cursor.execute(
+            '''
+            SELECT patient_name, appointment_type, time_schedule
+            FROM appointments
+            WHERE doctor=?
+            ORDER BY created_at DESC
+            ''',
+            (doctor_username,)
+        )
+    else:
+        cursor.execute(
+            '''
+            SELECT patient_name, appointment_type, time_schedule
+            FROM appointments
+            ORDER BY created_at DESC
+            '''
+        )
+
+    rows = cursor.fetchall()
+    print("[/doctor/patients] appointments rows fetched =", len(rows))
+    if len(rows) > 0:
+        preview = [rows[i]['patient_name'] for i in range(min(5, len(rows)))]
+        print("[/doctor/patients] patient_name preview =", preview)
+
+    conn.close()
+
+    patients = []
+    seen = set()
+    for r in rows:
+        if r['patient_name'] and r['patient_name'] not in seen:
+            seen.add(r['patient_name'])
+            patients.append({
+                'patient_name': r['patient_name'],
+                'appointment_type': r['appointment_type'],
+                'time_schedule': r['time_schedule'],
+            })
+
+    print("[/doctor/patients] derived unique patients =", len(patients))
+    if len(patients) > 0:
+        print("[/doctor/patients] unique patient preview =", [p['patient_name'] for p in patients[:5]])
+
+    return render_template(
+        'doctor_dashboard.html',
+        appointments=[],
+        patients=patients,
+        doctor_display_name=doctor_display_name,
+        active_page='patients'
+    )
 
 
 
@@ -323,7 +427,7 @@ def doctor_add_patient():
 
         # 2. Save to appointments table (so it shows on the dashboard after refresh)
         # Store doctor in a consistent identifier for doctor dashboard filtering.
-        # We store the logged-in doctor's username if available; otherwise fall back to provided doctor text.
+        # Always store `users.username` (e.g. "doctor1") so /doctor dashboard filtering works.
         doctor_identifier = session.get('doctor_username') or doctor
 
         cursor.execute(
@@ -583,6 +687,7 @@ def appointment():
         patient_name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip()
         phone = request.form.get('phone', '').strip()
+        # From dropdown: doctor username (e.g. "doctor1")
         doctor = request.form.get('doctor', '').strip()
         time_schedule = request.form.get('time_schedule', '').strip()
         issue = request.form.get('issue', '').strip()
@@ -616,7 +721,23 @@ def appointment():
         flash('Appointment submitted successfully.', 'success')
         return redirect('/appointment')
 
-    return render_template('appointment.html')
+    # GET: fetch doctors for dropdown
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute(
+        '''
+        SELECT username, firstname, lastname
+        FROM users
+        WHERE role=?
+        ORDER BY firstname ASC, lastname ASC
+        ''',
+        ('Doctor',)
+    )
+    doctors = cursor.fetchall()
+    conn.close()
+
+    return render_template('appointment.html', doctors=doctors)
 
 
 @app.route('/resources')
@@ -626,6 +747,30 @@ def resources():
 @app.route('/sysreq')
 def sysreq():
     return render_template('sysreq.html')
+
+# ---------------- CONTACT ----------------
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        # For now, no persistence layer exists for contact submissions.
+        # Validate minimal required fields and show success message.
+        name = (request.form.get('name') or '').strip()
+        email = (request.form.get('email') or '').strip()
+        message = (request.form.get('message') or '').strip()
+
+        if not name or not email or not message:
+            flash("Please fill all required fields.", "error")
+            return redirect('/contact')
+
+        # Optional: basic email sanity check
+        if '@' not in email:
+            flash("Please enter a valid email address.", "error")
+            return redirect('/contact')
+
+        flash("Message received. We’ll contact you shortly.", "success")
+        return redirect('/contact?submitted=1')
+
+    return render_template('contact.html')
 
 
 # ---------------- RUN ----------------
