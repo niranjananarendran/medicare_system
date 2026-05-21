@@ -575,7 +575,7 @@
 
         <div class="notification">
           🔔
-          <span>5</span>
+          <span>{{ (today_appointments_today if today_appointments_today is not none else 0) + (today_emergency_count if today_emergency_count is not none else 0) }}</span>
         </div>
 
         <div class="doctor-profile">
@@ -617,7 +617,7 @@
 
         <div class="stat-content">
           <h4>Total Appointments</h4>
-          <h2>5</h2>
+          <h2>{{ total_appointments }}</h2>
           <p>Appointments booked</p>
         </div>
       </div>
@@ -627,7 +627,7 @@
 
         <div class="stat-content">
           <h4>Today's Slots</h4>
-          <h2>3</h2>
+          <h2>{{ today_slots_count if today_slots_count is not none else 0 }}</h2>
           <p>Scheduled today</p>
         </div>
       </div>
@@ -663,7 +663,13 @@
       <div class="table-card">
 
         <div class="table-header">
-          <h3>Booked Appointments</h3>
+          <h3>
+            {% if active_page == 'patients' %}
+              All Patients
+            {% else %}
+              Booked Appointments
+            {% endif %}
+          </h3>
         </div>
 
         <table>
@@ -739,7 +745,7 @@
 
           <div class="quick-grid">
 
-            <div class="quick-btn">
+            <div class="quick-btn" role="button" tabindex="0" onclick="scrollToPrescription()">
               <div>💊</div>
               <p>Add Prescription</p>
             </div>
@@ -760,6 +766,107 @@
             </div>
 
           </div>
+
+          <!-- ADD PRESCRIPTION (ONLY ON /doctor DASHBOARD) -->
+          {% if active_page == 'dashboard' %}
+          <div id="prescription-section" style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border);">
+
+            <h3 style="font-family:'Sora',sans-serif; font-size:16px; margin-bottom:10px;">
+              💊 Add Prescription
+            </h3>
+
+            <form id="prescriptionForm" onsubmit="return savePrescription(event);">
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+
+                <div style="grid-column:1 / -1;">
+                  <label style="display:block; font-size:12px; color:var(--gray); margin-bottom:6px;">Patient</label>
+                  <select
+                    id="prescriptionPatient"
+                    required
+                    style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:12px; outline:none; background:white;"
+                  >
+                    <option value="" selected disabled>Select a patient</option>
+                    {% if patients %}
+                      {% for p in patients %}
+                        <option value="{{ p.patient_name }}">{{ p.patient_name }}</option>
+                      {% endfor %}
+                    {% endif %}
+                  </select>
+                </div>
+
+                <div>
+                  <label style="display:block; font-size:12px; color:var(--gray); margin-bottom:6px;">Medicine</label>
+                  <input
+                    id="prescriptionMedicine"
+                    type="text"
+                    required
+                    style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:12px; outline:none; background:white;"
+                    placeholder="e.g., Paracetamol"
+                  >
+                </div>
+
+                <div>
+                  <label style="display:block; font-size:12px; color:var(--gray); margin-bottom:6px;">Dosage</label>
+                  <input
+                    id="prescriptionDosage"
+                    type="text"
+                    required
+                    style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:12px; outline:none; background:white;"
+                    placeholder="e.g., 500mg"
+                  >
+                </div>
+
+                <div>
+                  <label style="display:block; font-size:12px; color:var(--gray); margin-bottom:6px;">Frequency</label>
+                  <input
+                    id="prescriptionFrequency"
+                    type="text"
+                    required
+                    style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:12px; outline:none; background:white;"
+                    placeholder="e.g., Twice a day"
+                  >
+                </div>
+
+                <div>
+                  <label style="display:block; font-size:12px; color:var(--gray); margin-bottom:6px;">Duration</label>
+                  <input
+                    id="prescriptionDuration"
+                    type="text"
+                    required
+                    style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:12px; outline:none; background:white;"
+                    placeholder="e.g., 5 days"
+                  >
+                </div>
+
+              </div>
+
+              <div style="margin-top:12px;">
+                <label style="display:block; font-size:12px; color:var(--gray); margin-bottom:6px;">Notes</label>
+                <textarea
+                  id="prescriptionNotes"
+                  required
+                  style="width:100%; min-height:88px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; outline:none; background:white;"
+                  placeholder="Add instructions for patient..."
+                ></textarea>
+              </div>
+
+              <div style="margin-top:14px; display:flex; gap:12px; align-items:center;">
+                <button
+                  type="submit"
+                  style="padding:12px 16px; border:none; border-radius:12px; background:var(--primary); color:white; font-size:14px; cursor:pointer;"
+                >
+                  Save Prescription
+                </button>
+
+                <span id="prescriptionStatus" style="color:var(--gray); font-size:12px;">
+                  (Ready)
+                </span>
+              </div>
+            </form>
+
+          </div>
+          {% endif %}
 
         </div>
 
@@ -810,7 +917,7 @@
 
               <div class="notify-content">
                 <h4>Appointment Reminder</h4>
-                <p>You have 5 appointments today</p>
+                <p>You have {{ today_appointments_today if today_appointments_today is not none else 0 }} appointments today</p>
               </div>
 
             </div>
@@ -823,7 +930,7 @@
 
               <div class="notify-content">
                 <h4>Emergency Case</h4>
-                <p>1 emergency case active</p>
+                <p>{{ today_emergency_count if today_emergency_count is not none else 0 }} emergency case active</p>
               </div>
 
             </div>
@@ -865,6 +972,70 @@
     month:"long",
     year:"numeric"
   });
+
+  function scrollToPrescription(){
+    const el = document.getElementById("prescription-section");
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  async function savePrescription(event){
+    event.preventDefault();
+
+    const statusEl = document.getElementById("prescriptionStatus");
+    if(statusEl) statusEl.textContent = "Saving...";
+
+    const patientName = document.getElementById("prescriptionPatient")?.value || "";
+    const medicine     = document.getElementById("prescriptionMedicine")?.value || "";
+    const dosage       = document.getElementById("prescriptionDosage")?.value || "";
+    const frequency    = document.getElementById("prescriptionFrequency")?.value || "";
+    const duration     = document.getElementById("prescriptionDuration")?.value || "";
+    const notes        = document.getElementById("prescriptionNotes")?.value || "";
+
+    const payload = {
+      patient_name: patientName,
+      medicine: medicine,
+      dosage: dosage,
+      frequency: frequency,
+      duration: duration,
+      notes: notes
+    };
+
+    try{
+      const resp = await fetch('/doctor/add-prescription', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+
+      const data = await resp.json().catch(() => ({}));
+
+      if(!resp.ok || !data || data.status !== 'ok'){
+        const msg = (data && data.message) ? data.message : 'Failed to save prescription';
+        if(statusEl) statusEl.textContent = msg;
+        if(statusEl) statusEl.style.color = 'var(--red)';
+        return false;
+      }
+
+      if(statusEl){
+        statusEl.textContent = 'Prescription saved successfully';
+        statusEl.style.color = 'var(--green)';
+      }
+
+      // Optional: clear fields after save
+      document.getElementById("prescriptionMedicine").value = '';
+      document.getElementById("prescriptionDosage").value = '';
+      document.getElementById("prescriptionFrequency").value = '';
+      document.getElementById("prescriptionDuration").value = '';
+      document.getElementById("prescriptionNotes").value = '';
+    }catch(err){
+      if(statusEl){
+        statusEl.textContent = 'Network error while saving';
+        statusEl.style.color = 'var(--red)';
+      }
+    }
+
+    return false;
+  }
 
 </script>
 

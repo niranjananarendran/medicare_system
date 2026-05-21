@@ -41,6 +41,21 @@ def init_db():
         )
     ''')
 
+    # Prescriptions table (for doctor dashboard)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS prescriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            doctor_username TEXT NOT NULL,
+            patient_name TEXT NOT NULL,
+            medicine TEXT NOT NULL,
+            dosage TEXT NOT NULL,
+            frequency TEXT NOT NULL,
+            duration TEXT NOT NULL,
+            notes TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
     # Appointments table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS appointments (
@@ -85,7 +100,61 @@ def init_db():
             "9999999999", "Doctor", "doctor1", "1234"
         ))
 
-    conn.commit()
+    # Seed dummy patients/appointments for doctor dashboard (only if no appointments exist)
+    cursor.execute("SELECT COUNT(*) FROM appointments")
+    appointments_count = cursor.fetchone()[0]
+
+    if appointments_count == 0:
+        from datetime import date, timedelta
+
+        today = date.today()
+        today_start = f"{today.isoformat()} 09:00:00"
+        today_mid = f"{today.isoformat()} 10:30:00"
+        today_end = f"{today.isoformat()} 14:00:00"
+        tomorrow_start = f"{(today + timedelta(days=1)).isoformat()} 11:00:00"
+
+        seed_patients = [
+            # firstname, lastname, dob, gender, phone, address, patient_name
+            ("Priya", "Verma", "1993-02-17", "F", "9000000011", "14 Sunrise Boulevard", "Priya Verma"),
+            ("Arjun", "Rao", "1988-06-30", "M", "9000000012", "27 Cedar Street", "Arjun Rao"),
+            ("Sneha", "Bhatt", "1991-09-08", "F", "9000000013", "3 Meadow View Road", "Sneha Bhatt"),
+            ("Karthik", "Menon", "1984-12-19", "M", "9000000014", "88 Orchid Avenue", "Karthik Menon"),
+            ("Nisha", "Paul", "1996-04-25", "F", "9000000015", "61 Willow Crescent", "Nisha Paul"),
+        ]
+
+        # Insert into patients table
+        cursor.executemany(
+            '''INSERT INTO patients (firstname, lastname, dob, gender, phone, address)
+               VALUES (?, ?, ?, ?, ?, ?)''',
+            [(fn, ln, dob, gender, phone, addr) for (fn, ln, dob, gender, phone, addr, _) in seed_patients]
+        )
+
+        # Insert into appointments table (so /doctor derives patient listing from appointments)
+        # doctor column should match users.username for filtering in /doctor and /doctor/patients
+        doctor_identifier = "doctor1"
+        # NOTE: /doctor lists appointments ordered by created_at DESC.
+        # To ensure the "Patients" panel aligns with "Today's Slots", we seed created_at
+        # so today's appointments appear as most recent.
+        seed_appointments = [
+            # appointment_type, patient_name, email, phone, doctor, time_schedule, issue, blood_group, allergies, medications, notes, created_at
+            ("OPD", "Priya Verma", "priya.verma@example.com", "9000000011", doctor_identifier, today_start, "Seasonal fever and fatigue", "A+", "None", "Paracetamol", "—", f"{today.isoformat()} 08:45:00"),
+            ("IPD", "Arjun Rao", "arjun.rao@example.com", "9000000012", doctor_identifier, today_mid, "Acute gastritis and nausea", "B+", "Shellfish", "Antacids", "Follow-up after 1 day", f"{today.isoformat()} 10:15:00"),
+            ("OPD", "Sneha Bhatt", "sneha.bhatt@example.com", "9000000013", doctor_identifier, today_end, "Migraine with light sensitivity", "O+", "None", "Triptan", "—", f"{today.isoformat()} 13:30:00"),
+            # Emergency today (to make Emergency card non-zero)
+            ("emergency", "Karthik Menon", "karthik.menon@example.com", "9000000014", doctor_identifier, today_mid, "Chest tightness and shortness of breath", "AB+", "None", "Oxygen + bronchodilator", "Urgent", f"{today.isoformat()} 11:45:00"),
+            # One appointment tomorrow (older created_at so it doesn't pollute today's top listing)
+            ("OPD", "Nisha Paul", "nisha.paul@example.com", "9000000015", doctor_identifier, tomorrow_start, "Routine vitals checkup", "A-", "None", "—", "—", f"{(today - timedelta(days=1)).isoformat()} 15:00:00"),
+        ]
+        cursor.executemany(
+            '''INSERT INTO appointments
+               (appointment_type, patient_name, email, phone, doctor,
+                time_schedule, issue, blood_group, allergies, medications, notes, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            seed_appointments
+        )
+
+        conn.commit()
+
     conn.close()
 
 
@@ -235,6 +304,10 @@ def doctor():
 
     doctor_username = session.get('doctor_username') or ''
 
+    from datetime import datetime, date
+
+    today_str = date.today().isoformat()  # 'YYYY-MM-DD'
+
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -267,6 +340,45 @@ def doctor():
         cursor.execute('SELECT * FROM appointments ORDER BY created_at DESC LIMIT 50')
 
     appointments = cursor.fetchall()
+
+    # Total Appointments (for the stats card)
+    # Match the "Booked Appointments" table rows (doctor-filtered + latest 50).
+    total_appointments = len(appointments)
+
+    # Today's dummy stats -> now computed from real DB data
+    # Assumption: time_schedule starts with an ISO-like date 'YYYY-MM-DD ...'
+    # so we can safely filter with LIKE 'YYYY-MM-DD%'.
+    if doctor_username:
+        cursor.execute(
+            '''
+            SELECT
+                COUNT(*) AS today_slots_count,
+                SUM(CASE WHEN appointment_type = 'emergency' OR appointment_type NOT IN ('OPD','IPD') THEN 1 ELSE 0 END) AS today_emergency_count
+            FROM appointments
+            WHERE doctor=?
+              AND time_schedule LIKE ? || '%'
+            ''',
+            (doctor_username, today_str)
+        )
+    else:
+        cursor.execute(
+            '''
+            SELECT
+                COUNT(*) AS today_slots_count,
+                SUM(CASE WHEN appointment_type = 'emergency' OR appointment_type NOT IN ('OPD','IPD') THEN 1 ELSE 0 END) AS today_emergency_count
+            FROM appointments
+            WHERE time_schedule LIKE ? || '%'
+            ''',
+            (today_str,)
+        )
+
+    stats_row = cursor.fetchone()
+    today_slots_count = int(stats_row['today_slots_count'] or 0) if stats_row else 0
+    today_emergency_count = int(stats_row['today_emergency_count'] or 0) if stats_row else 0
+
+    # "You have X appointments today" in template
+    today_appointments_today = today_slots_count
+
     conn.close()
 
     patients = []
@@ -286,7 +398,11 @@ def doctor():
         appointments=appointments,
         patients=patients,
         doctor_display_name=doctor_display_name,
-        active_page='dashboard'
+        active_page='dashboard',
+        total_appointments=total_appointments,
+        today_slots_count=today_slots_count,
+        today_appointments_today=today_appointments_today,
+        today_emergency_count=today_emergency_count
     )
 
 
@@ -370,6 +486,58 @@ def doctor_patients():
 
 
 # ---------------- DOCTOR: ADD PATIENT ----------------
+@app.route('/doctor/add-prescription', methods=['POST'])
+def doctor_add_prescription():
+    """
+    Saves prescription submitted from doctor_dashboard.html
+    """
+    if not session.get('is_doctor'):
+        return jsonify({'status': 'error', 'message': 'Not authenticated'}), 401
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({'status': 'error', 'message': 'No data received'}), 400
+
+    doctor_username = session.get('doctor_username') or ''
+
+    patient_name = (data.get('patient_name') or '').strip()
+    medicine     = (data.get('medicine') or '').strip()
+    dosage       = (data.get('dosage') or '').strip()
+    frequency    = (data.get('frequency') or '').strip()
+    duration     = (data.get('duration') or '').strip()
+    notes        = (data.get('notes') or '').strip()
+
+    # Basic validation
+    if not doctor_username:
+        return jsonify({'status': 'error', 'message': 'Doctor username missing in session'}), 401
+    if not patient_name:
+        return jsonify({'status': 'error', 'message': 'Patient is required'}), 400
+    if not medicine or not dosage or not frequency or not duration or not notes:
+        return jsonify({'status': 'error', 'message': 'All prescription fields are required'}), 400
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            '''
+            INSERT INTO prescriptions
+              (doctor_username, patient_name, medicine, dosage, frequency, duration, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''',
+            (doctor_username, patient_name, medicine, dosage, frequency, duration, notes)
+        )
+        new_id = cursor.lastrowid
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    conn.close()
+
+    return jsonify({'status': 'ok', 'id': new_id})
+
+
 @app.route('/doctor/add-patient', methods=['POST'])
 def doctor_add_patient():
     """
